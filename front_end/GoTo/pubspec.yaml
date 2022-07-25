@@ -32,6 +32,7 @@ dependencies:
 
 #  showing google map api
   google_maps_flutter: ^2.1.9
+  flutter_map: ^2.1.0
 
 
   # The following adds the Cupertino Icons font to your application.

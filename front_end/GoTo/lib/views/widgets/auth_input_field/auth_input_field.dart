@@ -17,25 +17,25 @@ class AuthInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 17),
-      child: Column(
-        children: [
-          phoneInputController != null
-              ? PhoneInputField(textEditingController: phoneInputController!)
-              : const SizedBox(),
-          const SizedBox(height: 8,),
+    return Column(
+      children: [
+        if (phoneInputController != null)
+          ...[
+            PhoneInputField(textEditingController: phoneInputController!),
+          ],
 
-          passwordInputController != null
-              ? PasswordInputField(textEditingController: passwordInputController!)
-              : const SizedBox(),
-          const SizedBox(height: 8,),
+        if (passwordInputController != null)
+          ...[
+            const SizedBox(height: 15,),
+            PasswordInputField(textEditingController: passwordInputController!),
+          ],
 
-          confirmPasswordInputController != null
-              ? PasswordInputField(textEditingController: confirmPasswordInputController!)
-              : const SizedBox(),
-        ],
-      ),
+        if (confirmPasswordInputController != null)
+          ...[
+            const SizedBox(height: 15,),
+            PasswordInputField(textEditingController: passwordInputController!, isConfirmPassword: true,),
+          ],
+      ],
     );
   }
 }

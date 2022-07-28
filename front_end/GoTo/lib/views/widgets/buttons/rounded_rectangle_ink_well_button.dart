@@ -37,7 +37,9 @@ class RoundedRectangleInkWellButton extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          customBorder: customBorder,
+          customBorder: customBorder ?? RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadiusValue),
+          ),
           splashColor: splashColor,
           child: Container(
             alignment: alignment,

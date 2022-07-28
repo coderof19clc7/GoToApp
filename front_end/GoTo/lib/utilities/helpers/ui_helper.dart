@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_to/configs/constants/route_constants.dart';
 import 'package:go_to/views/pages/login_page/login_page.dart';
 
@@ -11,20 +12,35 @@ import 'package:go_to/views/pages/login_page/login_page.dart';
 //   CookieManager().clearCookies();
 // }
 
-Route? generateRoutes(RouteSettings settings) {
-  MaterialPageRoute buildCustomPageRoute(
-      {required Widget child, String? directionTransition, String? animationType}) {
-    return MaterialPageRoute(
-      settings: settings, builder: (context) => child,
-    );
+class UIHelper {
+  Route? generateRoutes(RouteSettings settings) {
+    MaterialPageRoute buildCustomPageRoute(
+        {required Widget child, String? directionTransition, String? animationType}) {
+      return MaterialPageRoute(
+        settings: settings, builder: (context) => child,
+      );
+    }
+
+    switch(settings.name) {
+      case RouteConstants.signInRoute: {
+        return buildCustomPageRoute(child: const LoginPage());
+      }
+      default: {
+        return null;
+      }
+    }
   }
 
-  switch(settings.name) {
-    case RouteConstants.signInRoute: {
-      return buildCustomPageRoute(child: const LoginPage());
+
+
+  static void hideKeyboard(BuildContext context) {
+    final currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+      currentFocus.focusedChild?.unfocus();
     }
-    default: {
-      return null;
-    }
+  }
+
+  static void hideKeyboardNoContext() {
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 }

@@ -10,10 +10,9 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
     required AuthState authState,
   }) : super(authState);
 
-  bool validateInput(List<String> input) {
+  List<String> validateInput(List<String> input) {
     final length = input.length;
     List<String> errorList = [];
-    bool isInputOK = true;
     for (int i = 0; i < length; i++) {
       if (input[i].isEmpty) {
         errorList.add(
@@ -23,13 +22,11 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
                 : StringConstants.confirm +
                 StringConstants.password.toLowerCase()} ${StringConstants.cannot_be_empty.toLowerCase()}"
         );
-        isInputOK = false;
       }
       else {
         if (i == 0) {
           if (!input[i].phoneNumberValidate()) {
             errorList.add("${StringConstants.phoneNumber} ${StringConstants.not_valid.toLowerCase()}");
-            isInputOK = false;
           }
           else {
             errorList.add("");
@@ -38,7 +35,6 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
         else if (i == 1) {
           if (!input[i].passwordValidate()) {
             errorList.add("${StringConstants.password} ${StringConstants.must_include.toLowerCase()}");
-            isInputOK = false;
           }
           else {
             errorList.add("");
@@ -50,7 +46,6 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
               "${StringConstants.confirm + StringConstants.password.toLowerCase()} "
                   "${StringConstants.not_match_with.toLowerCase() + StringConstants.password.toLowerCase()}",
             );
-            isInputOK = false;
           }
           else {
             errorList.add("");
@@ -59,6 +54,6 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
       }
     }
 
-    return isInputOK;
+    return errorList;
   }
 }

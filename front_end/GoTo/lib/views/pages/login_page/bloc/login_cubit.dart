@@ -11,6 +11,6 @@ class LoginCubit extends AuthCubit<LoginState> {
     print("phone $phoneNumber");
     print("password: $password");
 
-
+    final isInputOK = validateInput([phoneNumber, password]);
   }
 }

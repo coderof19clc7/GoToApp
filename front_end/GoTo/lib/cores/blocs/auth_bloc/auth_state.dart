@@ -1,4 +1,10 @@
 part of 'auth_cubit.dart';
 
 @immutable
-class AuthState {}
+class AuthState {
+  final List<String>? errorList;
+
+  const AuthState({
+    this.errorList,
+  });
+}

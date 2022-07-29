@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
+import 'package:go_to/configs/constants/enums/auth_enums.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/generated/flutter_gen/assets.gen.dart';
 import 'package:go_to/utilities/helpers/ui_helper.dart';
@@ -74,20 +75,25 @@ class _LoginPageViewState extends State<LoginPageView> {
 
                         //forgot password button
                         buildTextButton(context, () {
-                            print("Go to forgot password page.");
-                          }, false,),
+                          UIHelper.hideKeyboard(context);
+                          print("Go to forgot password page.");
+                        }, false,),
 
                         //sign in button
                         RoundedRectangleInkWellButton(
                           width: DimenConstants.getScreenWidth(context),
+                          height: 60,
                           paddingVertical: 10,
                           bgLinearGradient: LinearGradient(colors: ColorConstants.defaultOrangeList),
                           onTap: () {
+                            UIHelper.hideKeyboard(context);
                             contextLogin.read<LoginCubit>().onSignInSubmit(
                               phoneInputController.text, passwordInputController.text,
                             );
                           },
-                          child: const Text(
+                          child: state.authEnum == AuthEnum.authenticating
+                              ? const CircularProgressIndicator(color: ColorConstants.baseWhite,)
+                              : const Text(
                             StringConstants.signIn,
                             style: TextStyle(
                               color: Colors.white,
@@ -100,6 +106,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                         //sign up button
                         Align(
                           child: buildTextButton(context, () {
+                            UIHelper.hideKeyboard(context);
                             print("Go to sign up page.");
                           }, true,),
                         ),

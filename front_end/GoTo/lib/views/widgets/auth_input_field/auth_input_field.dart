@@ -17,23 +17,27 @@ class AuthInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final needValidateInput = confirmPasswordInputController != null;
     return Column(
       children: [
         if (phoneInputController != null)
           ...[
-            PhoneInputField(textEditingController: phoneInputController!),
+            PhoneInputField(textEditingController: phoneInputController!, needValidateInput: needValidateInput,),
           ],
 
         if (passwordInputController != null)
           ...[
             const SizedBox(height: 15,),
-            PasswordInputField(textEditingController: passwordInputController!),
+            PasswordInputField(textEditingController: passwordInputController!, needValidateInput: needValidateInput,),
           ],
 
         if (confirmPasswordInputController != null)
           ...[
             const SizedBox(height: 15,),
-            PasswordInputField(textEditingController: passwordInputController!, isConfirmPassword: true,),
+            PasswordInputField(
+              textEditingController: confirmPasswordInputController!, isConfirmPassword: true,
+              textSecondaryEditingController: passwordInputController!, needValidateInput: needValidateInput,
+            ),
           ],
       ],
     );

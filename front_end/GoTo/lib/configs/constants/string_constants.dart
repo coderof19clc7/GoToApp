@@ -5,6 +5,7 @@ class StringConstants {
   static const guestAccount = "Tài khoản khách";
   static const forgotPassword = "Quên mật khẩu?";
   static const phoneNumber = "Số điện thoại";
+  static const name = "Tên";
   static const password = "Mật khẩu";
   static const confirm = "Xác nhận";
   static const cannot_be_empty = "Không được rỗng";

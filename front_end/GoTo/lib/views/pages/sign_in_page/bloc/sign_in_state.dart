@@ -1,4 +1,4 @@
-part of 'login_cubit.dart';
+part of 'sign_in_cubit.dart';
 
 @immutable
 class LoginState extends AuthState {

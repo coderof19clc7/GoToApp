@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_to/cores/blocs/app_bloc_observer.dart';
-import 'package:go_to/views/pages/login_page/login_page.dart';
+import 'package:go_to/views/pages/sign_in_page/sign_in_page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      home: LoginPage(),
+      home: SignInPage(),
     );
   }
 }

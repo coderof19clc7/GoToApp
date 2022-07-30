@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/route_constants.dart';
-import 'package:go_to/views/pages/login_page/login_page.dart';
+import 'package:go_to/views/pages/sign_in_page/sign_in_page.dart';
 
 // Future<bool> checkInternetConnection() async {
 //   return await InternetConnectionChecker().hasConnection;
@@ -25,7 +25,7 @@ class UIHelper {
 
     switch(settings.name) {
       case RouteConstants.signInRoute: {
-        return buildCustomPageRoute(child: const LoginPage());
+        return buildCustomPageRoute(child: const SignInPage());
       }
       default: {
         return null;

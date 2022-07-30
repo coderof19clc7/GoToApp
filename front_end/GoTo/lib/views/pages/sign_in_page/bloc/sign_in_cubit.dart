@@ -7,8 +7,8 @@ import 'package:go_to/utilities/helpers/ui_helper.dart';
 
 part 'sign_in_state.dart';
 
-class LoginCubit extends AuthCubit<LoginState> {
-  LoginCubit() : super(authState: const LoginState());
+class SignInCubit extends AuthCubit<SignInState> {
+  SignInCubit() : super(authState: const SignInState());
 
   void onSignInSubmit(String phoneNumber, String password) {
     print("phone $phoneNumber");
@@ -27,11 +27,11 @@ class LoginCubit extends AuthCubit<LoginState> {
     }
 
     //if there is no input error
-    Future.delayed(const Duration(seconds: 5), () => _doSignIn());
-    // _doSignIn();
+    Future.delayed(const Duration(seconds: 5), () => _doSignIn(phoneNumber, password));
+    // _doSignIn(phoneNumber, password);
   }
 
-  void _doSignIn() {
+  void _doSignIn(String phoneNumber, String password) {
     _onSignInSucceeded();
   }
 
@@ -45,7 +45,8 @@ class LoginCubit extends AuthCubit<LoginState> {
   void _showFailedSignInToast() {
     UIHelper.showErrorToast(
       "${StringConstants.signIn} ${StringConstants.failed}.\n"
-          "${StringConstants.please} ${StringConstants.checkYourSignInInputAgain}.",
+          "${StringConstants.please} ${StringConstants.checkYourInputAgain.toLowerCase()} "
+          "${StringConstants.signIn.toLowerCase()}.",
     );
   }
 }

@@ -1,17 +1,15 @@
 part of 'sign_in_cubit.dart';
 
 @immutable
-class LoginState extends AuthState {
-  const LoginState({
-    this.authEnum,
+class SignInState extends AuthState {
+  const SignInState({
+    super.authEnum,
   });
 
-  final AuthEnum? authEnum;
-
-  LoginState copyWith({
+  SignInState copyWith({
     AuthEnum? authEnum,
   }) {
-    return LoginState(
+    return SignInState(
       authEnum: authEnum ?? this.authEnum,
     );
   }

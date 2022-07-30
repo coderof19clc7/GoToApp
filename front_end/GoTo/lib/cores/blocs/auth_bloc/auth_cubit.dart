@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_to/configs/constants/enums/auth_enums.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/utilities/extensions/string_extensions.dart';
 
@@ -33,6 +34,14 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
           }
         }
         else if (i == 1) {
+          if (input[i].isEmpty) {
+            errorList.add("${StringConstants.name} ${StringConstants.cannot_be_empty.toLowerCase()}");
+          }
+          else {
+            errorList.add("");
+          }
+        }
+        else if (i == 2) {
           if (!input[i].passwordValidate()) {
             errorList.add("${StringConstants.password} ${StringConstants.must_include.toLowerCase()}");
           }
@@ -41,10 +50,10 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
           }
         }
         else {
-          if (!input[i].confirmPasswordValidate(input[1])) {
+          if (!input[i].confirmPasswordValidate(input[2])) {
             errorList.add(
-              "${StringConstants.confirm + StringConstants.password.toLowerCase()} "
-                  "${StringConstants.not_match_with.toLowerCase() + StringConstants.password.toLowerCase()}",
+              "${StringConstants.confirm} ${StringConstants.password.toLowerCase()} "
+                  "${StringConstants.not_match_with.toLowerCase()} ${StringConstants.password.toLowerCase()}",
             );
           }
           else {

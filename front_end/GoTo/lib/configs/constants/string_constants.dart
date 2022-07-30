@@ -15,5 +15,5 @@ class StringConstants {
   static const success = "Thành công";
   static const failed = "Thất bại";
   static const please = "Vui lòng";
-  static const checkYourSignInInputAgain = "Kiểm tra lại thông tin đăng nhập";
+  static const checkYourInputAgain = "Kiểm tra lại thông tin";
 }

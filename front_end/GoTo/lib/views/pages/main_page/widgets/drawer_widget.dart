@@ -46,7 +46,7 @@ class DrawerWidget extends StatelessWidget {
                 children: [
                    //user's name
                   Padding(
-                    padding: EdgeInsets.only(left: DimenConstants.getProportionalScreenWidth(context, 8),),
+                    padding: EdgeInsets.only(left: DimenConstants.getProportionalScreenWidth(context, 25),),
                     child: Text(
                       "ABC", style: TextStyle(
                         fontSize: DimenConstants.getProportionalScreenWidth(context, 17),
@@ -54,7 +54,7 @@ class DrawerWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  UIHelper.buildDivider(context, margin: 10),
+                  UIHelper.buildDivider(context, marginTop: 10),
 
                   //home choice
                   _buildClickableItem(
@@ -97,12 +97,13 @@ class DrawerWidget extends StatelessWidget {
     final isChosen = parentState.currentIndex == index;
     final itemColor = index == -1 ? ColorConstants.baseRed
         : (isChosen ? ColorConstants.orange : ColorConstants.baseBlack);
-    return GestureDetector(
-      onTap: onTap,
+    return InkWell(
+      onTap: !isChosen ? onTap : () {},
       child: Padding(
         padding: EdgeInsets.only(
-          top: DimenConstants.getProportionalScreenHeight(context, 10),
-          bottom: DimenConstants.getProportionalScreenHeight(context, 10),
+          left: DimenConstants.getProportionalScreenHeight(context, 15),
+          top: DimenConstants.getProportionalScreenHeight(context, 15),
+          bottom: DimenConstants.getProportionalScreenHeight(context, 15),
         ),
         child: Row(
           children: [
@@ -110,7 +111,7 @@ class DrawerWidget extends StatelessWidget {
 
             //icon
             svgGen != null ? svgGen.svg(color: itemColor) : Icon(iconData, color: itemColor,),
-            SizedBox(width: DimenConstants.getProportionalScreenWidth(context, 4),),
+            SizedBox(width: DimenConstants.getProportionalScreenWidth(context, 7),),
 
             //label
             Expanded(

@@ -52,11 +52,13 @@ class UIHelper {
   static void showSuccessToast(String? message) => _showToast(message, backgroundColor: ColorConstants.baseGreen);
   static void showNormalToast(String? message) => _showToast(message, backgroundColor: ColorConstants.baseBlack);
 
-  static Widget buildDivider(BuildContext context, {double margin = 0}) {
+  static Widget buildDivider(BuildContext context, {
+    double marginTop = 0, double marginBottom = 0,
+  }) {
     return Container(
       margin: EdgeInsets.only(
-        top: DimenConstants.getProportionalScreenHeight(context, margin),
-        bottom: DimenConstants.getProportionalScreenHeight(context, margin),
+        top: DimenConstants.getProportionalScreenHeight(context, marginTop),
+        bottom: DimenConstants.getProportionalScreenHeight(context, marginBottom),
       ),
       height: DimenConstants.getProportionalScreenHeight(context, 1),
       color: ColorConstants.baseGrey,

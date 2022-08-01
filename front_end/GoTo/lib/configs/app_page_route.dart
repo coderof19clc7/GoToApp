@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_to/configs/constants/route_constants.dart';
+import 'package:go_to/views/pages/main_page/main_page.dart';
 import 'package:go_to/views/pages/sign_in_page/sign_in_page.dart';
 import 'package:go_to/views/pages/sign_up_page/sign_up_page.dart';
 
 class AppPageRoute extends PageRouteBuilder {
   final Widget child;
+  final bool reverseAnimation;
 
   AppPageRoute({
-    required this.child,
+    required this.child, this.reverseAnimation = false,
     super.settings
   }) : super(
     transitionDuration: const Duration(milliseconds: 300),
@@ -21,7 +23,7 @@ class AppPageRoute extends PageRouteBuilder {
 
     return SlideTransition(
       position: Tween<Offset>(
-        begin: const Offset(1, 0),
+        begin: reverseAnimation ? const Offset(1, 0) : const Offset(-1, 0),
         end: Offset.zero,
       ).animate(animation),
       child: child,
@@ -30,21 +32,21 @@ class AppPageRoute extends PageRouteBuilder {
 
   static Route? onGenerateRoutes(RouteSettings settings) {
     AppPageRoute buildPageRoute(
-        {required Widget child, String? directionTransition, String? animationType}) {
+        {required Widget child, bool reverseAnimation = true}) {
       return AppPageRoute(
-        settings: settings, child: child,
+        settings: settings, child: child, reverseAnimation: reverseAnimation,
       );
     }
 
     switch(settings.name) {
       case RouteConstants.signInRoute: {
-        return buildPageRoute(child: const SignInPage());
+        return buildPageRoute(child: const SignInPage(), reverseAnimation: false);
       }
       case RouteConstants.signUpRoute: {
         return buildPageRoute(child: const SignUpPage());
       }
       default: {
-        return null;
+        return buildPageRoute(child: const MainPage());
       }
     }
   }

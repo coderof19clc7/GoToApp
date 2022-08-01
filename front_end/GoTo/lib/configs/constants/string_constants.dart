@@ -16,4 +16,7 @@ class StringConstants {
   static const failed = "Thất bại";
   static const please = "Vui lòng";
   static const checkYourInputAgain = "Kiểm tra lại thông tin";
+  static const app = "Ứng dụng";
+  static const home = "Trang chủ";
+  static const profile = "Thông tin";
 }

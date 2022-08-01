@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
+import 'package:go_to/configs/constants/dimen_constants.dart';
 
 // Future<bool> checkInternetConnection() async {
 //   return await InternetConnectionChecker().hasConnection;
@@ -50,4 +51,15 @@ class UIHelper {
   static void showErrorToast(String? message) => _showToast(message, backgroundColor: ColorConstants.baseRed);
   static void showSuccessToast(String? message) => _showToast(message, backgroundColor: ColorConstants.baseGreen);
   static void showNormalToast(String? message) => _showToast(message, backgroundColor: ColorConstants.baseBlack);
+
+  static Widget buildDivider(BuildContext context, {double margin = 0}) {
+    return Container(
+      margin: EdgeInsets.only(
+        top: DimenConstants.getProportionalScreenHeight(context, margin),
+        bottom: DimenConstants.getProportionalScreenHeight(context, margin),
+      ),
+      height: DimenConstants.getProportionalScreenHeight(context, 1),
+      color: ColorConstants.baseGrey,
+    );
+  }
 }

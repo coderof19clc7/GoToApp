@@ -52,6 +52,12 @@ dependencies:
   firebase_crashlytics: ^2.8.6
   firebase_remote_config: ^2.0.13
 
+#  get_it lib
+  get_it: ^7.2.0
+
+#  shared_preference lib
+  shared_preferences: ^2.0.15
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -4,14 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node index"
+    "compileRun": "tsc \"./src/index.ts\" --outDir \"./compiled/\" && node -r dotenv/config \"./compiled/index.js\"",
+    "run": "node \"./compiled/index.js\""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "firebase-admin": "^11.0.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "dotenv": "^16.0.1",
     "typescript": "^4.7.4"
   }
 }

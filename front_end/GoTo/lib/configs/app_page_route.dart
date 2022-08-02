@@ -23,7 +23,7 @@ class AppPageRoute extends PageRouteBuilder {
 
     return SlideTransition(
       position: Tween<Offset>(
-        begin: reverseAnimation ? const Offset(1, 0) : const Offset(-1, 0),
+        begin: !reverseAnimation ? const Offset(1, 0) : const Offset(-1, 0),
         end: Offset.zero,
       ).animate(animation),
       child: child,
@@ -32,7 +32,7 @@ class AppPageRoute extends PageRouteBuilder {
 
   static Route? onGenerateRoutes(RouteSettings settings) {
     AppPageRoute buildPageRoute(
-        {required Widget child, bool reverseAnimation = true}) {
+        {required Widget child, bool reverseAnimation = false}) {
       return AppPageRoute(
         settings: settings, child: child, reverseAnimation: reverseAnimation,
       );
@@ -40,7 +40,7 @@ class AppPageRoute extends PageRouteBuilder {
 
     switch(settings.name) {
       case RouteConstants.signInRoute: {
-        return buildPageRoute(child: const SignInPage(), reverseAnimation: false);
+        return buildPageRoute(child: const SignInPage(), reverseAnimation: true);
       }
       case RouteConstants.signUpRoute: {
         return buildPageRoute(child: const SignUpPage());

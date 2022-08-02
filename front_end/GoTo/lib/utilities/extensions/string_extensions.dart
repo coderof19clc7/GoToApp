@@ -12,4 +12,12 @@ extension StringExtension on String {
   bool confirmPasswordValidate(String password) {
     return compareTo(password) == 0;
   }
+
+  int toInt() {
+    return int.parse(this);
+  }
+
+  double toDouble() {
+    return double.parse(this);
+  }
 }

@@ -33,6 +33,7 @@ dependencies:
 #  showing map
   google_maps_flutter: ^2.1.9
   flutter_map: ^2.1.0
+  latlong2: ^0.8.1
 
 # bloc lib
   flutter_bloc: ^8.0.1

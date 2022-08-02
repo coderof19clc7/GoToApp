@@ -4,12 +4,15 @@ import 'package:go_to/configs/constants/keys/storage_keys.dart';
 import 'package:go_to/configs/constants/route_constants.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/managers/local_storage_manager.dart';
+import 'package:go_to/utilities/extensions/string_extensions.dart';
+import 'package:go_to/utilities/extensions/string_extensions.dart';
 
 const String envPath = ".env";
 
 class AppConfig{
-  String? baseUrl, mainColor, apiVersion, initialRoute;
-  String appName = "GoTo";
+  String? baseUrl, initialRoute;
+  String appName = "", openStreetMapUrl = "";
+  double centerLat = 0, centerLng = 0;
   bool debugTag = false;
   int cacheDuration = 100;
 
@@ -23,11 +26,16 @@ class AppConfig{
   Future<AppConfig> _loadConfig() async {
     try{
       await dotenv.load(fileName: envPath);
+      openStreetMapUrl = dotenv.env["openStreetMapUrl"] ?? "";
+      centerLat = (dotenv.env["hcmLat"] ?? "0").toDouble();
+      centerLng = (dotenv.env["hcmLng"] ?? "0").toDouble();
     } catch(e) {
       if (kDebugMode) {
         print(e);
       }
     }
+
+
 
     //initial route
     final accessToken = injector<LocalStorageManager>().getString(LocalStorageKeys.accessToken);

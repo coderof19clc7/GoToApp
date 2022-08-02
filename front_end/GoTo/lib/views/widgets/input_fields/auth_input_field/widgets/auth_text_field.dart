@@ -37,11 +37,16 @@ class _AuthTextFieldState extends State<AuthTextField> {
         widget.type == TextFieldTypeEnums.password ||
             widget.type == TextFieldTypeEnums.confirmPassword
     );
+    _focusNode.addListener(onFocusChanged);
   }
 
   final _focusNode = FocusNode();
   late String _errorText;
   late bool _obscureText;
+
+  void onFocusChanged() {
+    setState(() {});
+  }
 
   void _onChanged(String text) {
     bool validateText(String text) {
@@ -183,6 +188,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
 
   @override
   void dispose() {
+    _focusNode.removeListener(onFocusChanged);
     _focusNode.dispose();
     super.dispose();
   }

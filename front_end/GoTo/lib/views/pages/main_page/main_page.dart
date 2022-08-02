@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_to/configs/app_configs.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
-import 'package:go_to/configs/constants/dimen_constants.dart';
-import 'package:go_to/configs/constants/string_constants.dart';
-import 'package:go_to/configs/injection.dart';
+import 'package:go_to/utilities/helpers/ui_helper.dart';
 import 'package:go_to/views/pages/main_page/blocs/main_cubit.dart';
+import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/home_page.dart';
 import 'package:go_to/views/pages/main_page/widgets/drawer_widget.dart';
 import 'package:go_to/views/pages/main_page/widgets/title_widget.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({Key? key}) : super(key: key);
 
+  static const List<Widget> _widgetOptions = [
+    HomePage(),
+    Text('Đây là profile'),
+  ];
+
   @override
   Widget build(BuildContext context) {
+    PageStorageBucket bucket = PageStorageBucket();
+
     return BlocProvider(
       create: (context) => MainCubit(),
       child: BlocBuilder<MainCubit, MainState>(
@@ -31,6 +36,14 @@ class MainPage extends StatelessWidget {
                   backgroundColor: ColorConstants.orange,
                 ),
                 drawer:  DrawerWidget(parentContext: context, parentCubit: cubit, parentState: state,),
+                body: GestureDetector(
+                  onTap: () => UIHelper.hideKeyboard(context),
+                  child: PageStorage(
+                    bucket: bucket,
+                    child: _widgetOptions[state.currentIndex],
+                  ),
+                ),
+                resizeToAvoidBottomInset: false,
               ),
             ),
           );

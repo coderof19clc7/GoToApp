@@ -1,0 +1,17 @@
+{
+  "name": "gotoapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase-admin": "^11.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  }
+}

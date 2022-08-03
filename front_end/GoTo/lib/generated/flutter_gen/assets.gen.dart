@@ -21,6 +21,10 @@ class $AssetsImagesGen {
 class $AssetsSvgsGen {
   const $AssetsSvgsGen();
 
+  /// File path: assets/svgs/double_circle.svg
+  SvgGenImage get doubleCircle =>
+      const SvgGenImage('assets/svgs/double_circle.svg');
+
   /// File path: assets/svgs/eye-close.svg
   SvgGenImage get eyeClose => const SvgGenImage('assets/svgs/eye-close.svg');
 

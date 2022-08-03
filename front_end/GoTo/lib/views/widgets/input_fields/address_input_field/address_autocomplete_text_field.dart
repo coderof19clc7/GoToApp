@@ -6,8 +6,12 @@ import 'package:go_to/utilities/helpers/ui_helper.dart';
 
 class AddressAutocompleteTextField extends StatefulWidget {
   const AddressAutocompleteTextField({
-    Key? key,
+    Key? key, required this.textEditingController,
+    this.onTextChanged,
   }) : super(key: key);
+
+  final TextEditingController textEditingController;
+  final void Function()? onTextChanged;
 
   @override
   State<AddressAutocompleteTextField> createState() => _AddressAutocompleteTextFieldState();
@@ -16,7 +20,6 @@ class AddressAutocompleteTextField extends StatefulWidget {
 class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextField> {
   final debounceHelper = DebounceHelper();
   final focusNode = FocusNode();
-  final textEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -65,9 +68,12 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
       ),
       child: TextField(
         focusNode: focusNode,
-        controller: textEditingController,
+        controller: widget.textEditingController,
         onChanged: (text) {
-          debounceHelper.runTextChange(() => print(text.isNotEmpty ? text : "empty"));
+          debounceHelper.runTextChange(() {
+            print(text.isNotEmpty ? text : "empty");
+            widget.onTextChanged?.call();
+          });
         },
         keyboardType: TextInputType.streetAddress,
         maxLines: 1,
@@ -78,8 +84,8 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
             splashColor: ColorConstants.baseWhite,
             padding: const EdgeInsets.all(0),
             onPressed: () {
-              if (textEditingController.text.isNotEmpty) {
-                textEditingController.clear();
+              if (widget.textEditingController.text.isNotEmpty) {
+                widget.textEditingController.clear();
                 setState(() {});
               }
               else {
@@ -87,7 +93,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
                 UIHelper.hideKeyboard(context);
               }
             },
-            color: (focusNode.hasFocus || textEditingController.text.isNotEmpty)
+            color: (focusNode.hasFocus || widget.textEditingController.text.isNotEmpty)
                 ? ColorConstants.baseBlack
                 : ColorConstants.grey,
             icon: const Icon(Icons.close_rounded,),
@@ -105,7 +111,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
   void dispose() {
     focusNode.removeListener(onFocusChanged);
     focusNode.dispose();
-    textEditingController.dispose();
+    widget.textEditingController.dispose();
     super.dispose();
   }
 }

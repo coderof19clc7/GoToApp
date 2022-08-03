@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:go_to/configs/app_configs.dart';
 import 'package:go_to/configs/firebase_configs/firebase_options.dart';
 import 'package:go_to/cores/managers/local_storage_manager.dart';
+import 'package:go_to/cores/managers/network_manager.dart';
 
 final injector = GetIt.instance;
 
@@ -31,7 +32,7 @@ Future<void> initializeDependencies() async {
   // await AwesomeNotificationsHelper.initialize();
 
   // network
-  // injector.registerSingleton<NetworkHelper>(NetworkHelper());
+  injector.registerSingleton<NetworkManager>(NetworkManager.getInstance());
   // injector.registerSingleton<RemoteConfigHelper>(RemoteConfigHelper.init());
   // injector.registerSingleton<ApiExecutor>(ApiExecutor());
 }

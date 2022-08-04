@@ -1,0 +1,1 @@
+enum LocationEnums {startPoint, endPoint}

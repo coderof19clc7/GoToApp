@@ -19,4 +19,6 @@ class StringConstants {
   static const app = "Ứng dụng";
   static const home = "Trang chủ";
   static const profile = "Thông tin";
+  static const yourLocation = "Vị trí của bạn";
+  static const noResultFound = "Không tìm thấy kết quả tìm kiếm nào";
 }

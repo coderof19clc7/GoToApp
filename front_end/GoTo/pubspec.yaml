@@ -59,6 +59,9 @@ dependencies:
 #  shared_preference lib
   shared_preferences: ^2.0.15
 
+#  flutter_typeahead lib
+  flutter_typeahead: ^4.0.0
+
 #  dio lib
   dio: ^4.0.6
 

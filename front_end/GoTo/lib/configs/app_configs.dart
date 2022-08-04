@@ -5,7 +5,6 @@ import 'package:go_to/configs/constants/route_constants.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/managers/local_storage_manager.dart';
 import 'package:go_to/utilities/extensions/string_extensions.dart';
-import 'package:go_to/utilities/extensions/string_extensions.dart';
 
 const String envPath = ".env";
 

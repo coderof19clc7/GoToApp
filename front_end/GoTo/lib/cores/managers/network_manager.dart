@@ -16,4 +16,16 @@ class NetworkManager {
     _dioMapService ??= Dio(DioConstants.openRouteServiceOptions);
     return _dioMapService!;
   }
+
+  Future<Map<String, dynamic>?> request(Dio dio, String method, String path,
+      {Map<String, dynamic>? queryParameters,
+        Map<String, dynamic>? data,
+        Map<String, dynamic>? headers,
+        Map<String, dynamic>? extra}) async {
+    final result = await dio.request(path,
+        queryParameters: queryParameters ?? <String, dynamic>{},
+        options: Options(method: method, headers: headers, extra: extra),
+        data: data);
+    return result.data;
+  }
 }

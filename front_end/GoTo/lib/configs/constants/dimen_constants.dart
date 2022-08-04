@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DimenConstants {
-  static double baseWidth = 392.72727272727275;
-  static double baseHeight = 737.4545454545455;
+  static const double baseWidth = 392.72727272727275;
+  static const double baseHeight = 737.4545454545455;
+  static const double baseIconSize = 30;
   static double getScreenWidth(BuildContext context) {
     return MediaQuery.of(context).size.width;
   }

@@ -17,3 +17,8 @@ class DioConstants {
     receiveTimeout: receiveTimeout,
   );
 }
+
+class RequestMethod {
+  static const getMethod = "GET";
+  static const postMethod = "POST";
+}

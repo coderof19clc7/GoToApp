@@ -5,18 +5,18 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
-import 'package:go_to/utilities/debounce_helper.dart';
+import 'package:go_to/utilities/helpers/debounce_helper.dart';
 import 'package:go_to/utilities/helpers/ui_helper.dart';
 import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/blocs/home_cubit.dart';
 
 class AddressAutocompleteTextField extends StatefulWidget {
   const AddressAutocompleteTextField({
     Key? key, this.suggestedLocationList = const [],
-    this.onTextChanged, this.onOptionSelected, this.onClearText
+    this.suggestionApiFetching, this.onOptionSelected, this.onClearText
   }) : super(key: key);
 
   final List<SuggestedLocation>? suggestedLocationList;
-  final FutureOr<Iterable<SuggestedLocation>> Function(String text)? onTextChanged;
+  final FutureOr<Iterable<SuggestedLocation>> Function(String text)? suggestionApiFetching;
   final void Function(SuggestedLocation suggestedLocation)? onOptionSelected;
   final void Function()? onClearText;
 
@@ -35,11 +35,12 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
   void initState() {
     super.initState();
 
-    focusNode.addListener(onFocusChanged);
+    focusNode.addListener(onFocusNodeChanged);
   }
 
-  void onFocusChanged() {
+  void onFocusNodeChanged() {
     setState(() {});
+    print(focusNode.hasFocus);
     if (textEditingController.text.isEmpty == true && focusNode.hasFocus == false) {
       //clear marker
       widget.onClearText?.call();
@@ -50,43 +51,46 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
   Widget build(BuildContext context) {
     return TypeAheadField<SuggestedLocation>(
       debounceDuration: const Duration(milliseconds: 500),
-      suggestionsCallback: (text) async {
-        if (text.isEmpty || text.compareTo(previousText) != 0) {
-          previousText = text;
-          previousListSuggestion = (await (widget.onTextChanged?.call(text) ?? List<SuggestedLocation>.empty())).toList();
-        }
-        return previousListSuggestion;
-      },
+      hideSuggestionsOnKeyboardHide: !focusNode.hasFocus,
+      suggestionsCallback: _suggestionsCallback,
       noItemsFoundBuilder: _buildNoItemFoundWidget,
-      itemBuilder: _buildItem,
-      onSuggestionSelected: (suggestion) {
-        textEditingController.text = suggestion.name ?? "";
-        widget.onOptionSelected?.call(suggestion);
-      },
-      hideSuggestionsOnKeyboardHide: focusNode.hasFocus,
+      onSuggestionSelected: _onSuggestionSelected,
       textFieldConfiguration: _buildTextFieldConfiguration(),
+      itemBuilder: _buildItem,
     );
   }
 
-  Widget _buildItem(BuildContext context, SuggestedLocation suggestedLocation) {
-    final isSelfLocation = suggestedLocation.name?.compareTo(StringConstants.yourLocation) == 0;
-    return ListTile(
-      leading: Icon(
-        isSelfLocation ? Icons.my_location : Icons.location_on,
-        color: isSelfLocation
-            ? ColorConstants.baseBlueAccent
-            : ColorConstants.baseRed,
-        size: DimenConstants.getProportionalScreenWidth(context, 30),
-      ),
-      title: Text(
-        suggestedLocation.name ?? "",
-        style: TextStyle(
-          fontSize: DimenConstants.getProportionalScreenWidth(context, 17),
-          fontWeight: FontWeight.w600,
-          color: ColorConstants.baseBlack,
+  FutureOr<Iterable<SuggestedLocation>> _suggestionsCallback(String text) async {
+    if (text.isEmpty || text.compareTo(previousText) != 0) {
+      previousText = text;
+      previousListSuggestion = (await (widget.suggestionApiFetching?.call(text) ?? List<SuggestedLocation>.empty())).toList();
+    }
+    return previousListSuggestion;
+  }
+
+  Widget _buildNoItemFoundWidget(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      height: DimenConstants.getProportionalScreenHeight(context, 200),
+      width: DimenConstants.getScreenWidth(context) * 0.5,
+      child: Center(
+        child: Text(
+          StringConstants.noResultFound,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: DimenConstants.getProportionalScreenWidth(context, 25),
+            fontWeight: FontWeight.w600,
+            color: ColorConstants.baseGrey,
+          ),
         ),
       ),
     );
+  }
+
+  void _onSuggestionSelected(SuggestedLocation suggestedLocation) {
+    textEditingController.text = suggestedLocation.name ?? "";
+    previousText = textEditingController.text;
+    widget.onOptionSelected?.call(suggestedLocation);
   }
 
   TextFieldConfiguration _buildTextFieldConfiguration() {
@@ -111,10 +115,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
               }
             }
             else {
-              if (focusNode.hasFocus == false) {
-                //clear marker
-                widget.onClearText?.call();
-              } else {
+              if (focusNode.hasFocus) {
                 UIHelper.hideKeyboard(context);
               }
             }
@@ -129,20 +130,22 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
     );
   }
 
-  Widget _buildNoItemFoundWidget(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      height: DimenConstants.getProportionalScreenHeight(context, 200),
-      width: DimenConstants.getScreenWidth(context) * 0.5,
-      child: Center(
-        child: Text(
-          StringConstants.noResultFound,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: DimenConstants.getProportionalScreenWidth(context, 25),
-            fontWeight: FontWeight.w600,
-            color: ColorConstants.baseGrey,
-          ),
+  Widget _buildItem(BuildContext context, SuggestedLocation suggestedLocation) {
+    final isSelfLocation = suggestedLocation.name?.compareTo(StringConstants.yourLocation) == 0;
+    return ListTile(
+      leading: Icon(
+        isSelfLocation ? Icons.my_location : Icons.location_on,
+        color: isSelfLocation
+            ? ColorConstants.baseBlueAccent
+            : ColorConstants.baseRed,
+        size: DimenConstants.getProportionalScreenWidth(context, 30),
+      ),
+      title: Text(
+        suggestedLocation.name ?? "",
+        style: TextStyle(
+          fontSize: DimenConstants.getProportionalScreenWidth(context, 17),
+          fontWeight: FontWeight.w600,
+          color: ColorConstants.baseBlack,
         ),
       ),
     );
@@ -150,7 +153,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
 
   @override
   void dispose() {
-    focusNode.removeListener(onFocusChanged);
+    focusNode.removeListener(onFocusNodeChanged);
     focusNode.dispose();
     textEditingController.dispose();
     super.dispose();

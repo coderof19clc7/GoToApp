@@ -27,10 +27,9 @@ class AddressInputFieldState extends State<AddressInputField> {
         return Column(
           children: [
             _buildChild(
-              context, onTextChanged: (text) => contextHome.read<HomeCubit>().getSuggestedList(
+              context, suggestionApiFetching: (text) => contextHome.read<HomeCubit>().getSuggestedList(
                 LocationEnums.startPoint, text),
-              onOptionSelected: (text) => contextHome.read<HomeCubit>().addMarkerListAt(
-                  LocationEnums.startPoint, text),
+              onOptionSelected: (text) => contextHome.read<HomeCubit>().addMarkerListAt(text),
               onClearText: () => contextHome.read<HomeCubit>().removeMarkerListAt(LocationEnums.startPoint),
               icon: const StartLocationIcon(),
             ),
@@ -38,10 +37,9 @@ class AddressInputFieldState extends State<AddressInputField> {
               height: DimenConstants.getProportionalScreenHeight(context, 8),),
 
             _buildChild(
-              context, onTextChanged: (text) => contextHome.read<HomeCubit>().getSuggestedList(
+              context, suggestionApiFetching: (text) => contextHome.read<HomeCubit>().getSuggestedList(
                 LocationEnums.endPoint, text),
-              onOptionSelected: (text) => contextHome.read<HomeCubit>().addMarkerListAt(
-                  LocationEnums.endPoint, text),
+              onOptionSelected: (text) => contextHome.read<HomeCubit>().addMarkerListAt(text),
               onClearText: () => contextHome.read<HomeCubit>().removeMarkerListAt(LocationEnums.endPoint),
               icon: const EndLocationIcon(),
             ),
@@ -53,7 +51,7 @@ class AddressInputFieldState extends State<AddressInputField> {
 
   Widget _buildChild(BuildContext context, {
     required Widget icon,
-    FutureOr<Iterable<SuggestedLocation>> Function(String text)? onTextChanged,
+    FutureOr<Iterable<SuggestedLocation>> Function(String text)? suggestionApiFetching,
     void Function(SuggestedLocation suggestedLocation)? onOptionSelected,
     void Function()? onClearText,
   }) {
@@ -64,7 +62,7 @@ class AddressInputFieldState extends State<AddressInputField> {
         icon,
         SizedBox(width: DimenConstants.getProportionalScreenWidth(context, 8),),
         AddressAutocompleteTextField(
-          onTextChanged: onTextChanged,
+          suggestionApiFetching: suggestionApiFetching,
           onOptionSelected: onOptionSelected,
           onClearText: onClearText,
         ),

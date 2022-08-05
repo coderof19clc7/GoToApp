@@ -4,29 +4,28 @@ part of 'home_cubit.dart';
 class HomeState {
  const HomeState({
   this.startingPointSuggestions, this.endingPointSuggestions,
-  this.listMarker = const [],
-  this.chosenStartingPoint, this.chosenEndingPoint,
+  this.mapChosenSuggested = const {},
+  this.listMarker = const [], this.listPolyline = const [],
  });
 
  final List<SuggestedLocation>? startingPointSuggestions;
  final List<SuggestedLocation>? endingPointSuggestions;
- final SuggestedLocation? chosenStartingPoint;
- final SuggestedLocation? chosenEndingPoint;
+ final Map<String, SuggestedLocation>? mapChosenSuggested;
  final List<Marker>? listMarker;
+ final List<Polyline>? listPolyline;
 
  HomeState copyWith({
   List<SuggestedLocation>? startingPointSuggestions,
   List<SuggestedLocation>? endingPointSuggestions,
-  List<Marker>? listMarker,
-  SuggestedLocation? chosenStartingPoint,
-  SuggestedLocation? chosenEndingPoint,
+  Map<String, SuggestedLocation>? mapChosenSuggested,
+  List<Marker>? listMarker, List<Polyline>? listPolyline,
  }) {
   return HomeState(
    startingPointSuggestions: startingPointSuggestions ?? this.startingPointSuggestions,
    endingPointSuggestions: endingPointSuggestions ?? this.endingPointSuggestions,
+   mapChosenSuggested: mapChosenSuggested ?? this.mapChosenSuggested,
    listMarker: listMarker ?? this.listMarker,
-   chosenStartingPoint: chosenStartingPoint,
-   chosenEndingPoint: chosenEndingPoint,
+   listPolyline: listPolyline ?? this.listPolyline,
   );
  }
 }

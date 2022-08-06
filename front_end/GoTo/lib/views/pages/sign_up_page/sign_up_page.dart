@@ -38,6 +38,7 @@ class _SignUpPageViewState extends State<SignUpPageView> {
   Widget build(BuildContext context) {
     return BlocBuilder<SignUpCubit, SignUpState>(
       builder: (contextSignUp, state) {
+        contextSignUp.read<SignUpCubit>().context = context;
         return SafeArea(
           child: Scaffold(
             resizeToAvoidBottomInset: false,

@@ -3,13 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_to/configs/constants/enums/auth_enums.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/utilities/extensions/string_extensions.dart';
+import 'package:go_to/utilities/helpers/ui_helper.dart';
 
 part 'auth_state.dart';
 
 abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
   AuthCubit({
     required AuthState authState,
+    this.defaultSuccessMessage = "", this.defaultErrMessage = "",
   }) : super(authState);
+
+  final String defaultSuccessMessage;
+  final String defaultErrMessage;
+  BuildContext? context;
 
   List<String> validateInput(List<String> input) {
     final length = input.length;
@@ -64,5 +70,15 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
     }
 
     return errorList;
+  }
+
+  @protected
+  void showAuthenticateResultToast({bool isSuccessful = true, String? message}) {
+    if (isSuccessful) {
+      UIHelper.showSuccessToast(message ?? defaultSuccessMessage,);
+    }
+    else {
+      UIHelper.showErrorToast(message ?? defaultErrMessage);
+    }
   }
 }

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
+import 'package:go_to/configs/injection.dart';
 import 'package:go_to/generated/flutter_gen/assets.gen.dart';
+import 'package:go_to/models/common/user_info.dart';
 import 'package:go_to/utilities/helpers/ui_helper.dart';
 import 'package:go_to/views/pages/main_page/blocs/main_cubit.dart';
 
@@ -18,6 +20,7 @@ class DrawerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userInfo = injector<UserInfo>();
     return Drawer(
       child: Column(
         children: [
@@ -48,7 +51,7 @@ class DrawerWidget extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.only(left: DimenConstants.getProportionalScreenWidth(context, 25),),
                     child: Text(
-                      "ABC", style: TextStyle(
+                      userInfo.name ?? "", style: TextStyle(
                         fontSize: DimenConstants.getProportionalScreenWidth(context, 17),
                         fontWeight: FontWeight.w500,
                       ),

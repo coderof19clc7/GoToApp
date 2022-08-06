@@ -15,10 +15,8 @@ part 'sign_in_state.dart';
 
 class SignInCubit extends AuthCubit<SignInState> {
   SignInCubit() : super(
-    authState: const SignInState(),
-    defaultSuccessMessage: "${StringConstants.signIn} ${StringConstants.success}.",
-    defaultErrMessage: "${StringConstants.signIn} ${StringConstants.failed}.\n"
-        "${StringConstants.please} ${StringConstants.checkYourInputAgain.toLowerCase()} "
+    authState: const SignInState(), authAction: StringConstants.signIn,
+    defaultErrMessage: "${StringConstants.please} ${StringConstants.checkYourInputAgain.toLowerCase()} "
         "${StringConstants.signIn.toLowerCase()}.",
   );
 

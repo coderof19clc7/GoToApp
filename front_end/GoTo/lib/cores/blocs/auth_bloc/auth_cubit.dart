@@ -9,12 +9,12 @@ part 'auth_state.dart';
 
 abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
   AuthCubit({
-    required AuthState authState,
-    this.defaultSuccessMessage = "", this.defaultErrMessage = "",
+    required AuthState authState, required this.authAction,
+    this.defaultErrMessage = "",
   }) : super(authState);
 
-  final String defaultSuccessMessage;
   final String defaultErrMessage;
+  final String authAction;
   BuildContext? context;
 
   List<String> validateInput(List<String> input) {
@@ -73,12 +73,13 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
   }
 
   @protected
-  void showAuthenticateResultToast({bool isSuccessful = true, String? message}) {
+  void showAuthenticateResultToast({bool isSuccessful = true, String message = ""}) {
     if (isSuccessful) {
-      UIHelper.showSuccessToast(message ?? defaultSuccessMessage,);
+      UIHelper.showSuccessToast("$authAction ${StringConstants.success.toLowerCase()}.",);
     }
     else {
-      UIHelper.showErrorToast(message ?? defaultErrMessage);
+      UIHelper.showErrorToast("$authAction ${StringConstants.failed.toLowerCase()}\n"
+          "${message.isNotEmpty ? message : defaultErrMessage}");
     }
   }
 }

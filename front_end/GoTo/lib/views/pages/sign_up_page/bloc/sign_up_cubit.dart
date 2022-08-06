@@ -1,4 +1,3 @@
-import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:go_to/configs/constants/enums/auth_enums.dart';
 import 'package:go_to/configs/constants/network_constants/firebase_constants.dart';
@@ -6,17 +5,13 @@ import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/blocs/auth_bloc/auth_cubit.dart';
-import 'package:go_to/utilities/helpers/ui_helper.dart';
-import 'package:meta/meta.dart';
 
 part 'sign_up_state.dart';
 
 class SignUpCubit extends AuthCubit<SignUpState> {
   SignUpCubit() : super(
-    authState: const SignUpState(),
-    defaultSuccessMessage: "${StringConstants.signUp} ${StringConstants.success}.",
-    defaultErrMessage: "${StringConstants.signUp} ${StringConstants.failed}.\n"
-        "${StringConstants.please} ${StringConstants.checkYourInputAgain.toLowerCase()} "
+    authState: const SignUpState(), authAction: StringConstants.signUp,
+    defaultErrMessage: "${StringConstants.please} ${StringConstants.checkYourInputAgain.toLowerCase()} "
         "${StringConstants.signUp.toLowerCase()}.",
   );
 
@@ -61,11 +56,10 @@ class SignUpCubit extends AuthCubit<SignUpState> {
           _onSignUpSucceeded();
         } else {
           emit(state.copyWith(authEnum: AuthEnum.signInFailed));
-          showAuthenticateResultToast(isSuccessful: false, message: data["phoneNumber"]);
+          showAuthenticateResultToast(isSuccessful: false, message:  "${data["message"]}",);
         }
       }
     });
-    _onSignUpSucceeded();
   }
 
   void _onSignUpSucceeded() {

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_to/configs/constants/route_constants.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/managers/local_storage_manager.dart';
-import 'package:meta/meta.dart';
 
 part 'main_state.dart';
 

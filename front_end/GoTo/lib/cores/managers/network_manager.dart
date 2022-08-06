@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:go_to/configs/constants/dio_constants.dart';
+import 'package:go_to/configs/constants/network_constants/dio_constants.dart';
 
 class NetworkManager {
   static NetworkManager? _instance;

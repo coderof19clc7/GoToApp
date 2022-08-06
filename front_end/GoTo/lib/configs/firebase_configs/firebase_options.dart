@@ -52,7 +52,9 @@ class DefaultFirebaseOptions {
     messagingSenderId: '57209906652',
     projectId: 'gotoapp-357309',
     authDomain: 'gotoapp-357309.firebaseapp.com',
+    databaseURL: 'https://gotoapp-357309-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'gotoapp-357309.appspot.com',
+    measurementId: 'G-2P2ZX14SRM',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -60,6 +62,7 @@ class DefaultFirebaseOptions {
     appId: '1:57209906652:android:7e31211b55841f87811b19',
     messagingSenderId: '57209906652',
     projectId: 'gotoapp-357309',
+    databaseURL: 'https://gotoapp-357309-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'gotoapp-357309.appspot.com',
   );
 
@@ -68,6 +71,7 @@ class DefaultFirebaseOptions {
     appId: '1:57209906652:ios:a9a91227bff0dd5d811b19',
     messagingSenderId: '57209906652',
     projectId: 'gotoapp-357309',
+    databaseURL: 'https://gotoapp-357309-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'gotoapp-357309.appspot.com',
     iosClientId: '57209906652-lq65tgbmnpe1sulepakoctbc193hgbpv.apps.googleusercontent.com',
     iosBundleId: 'com.example.goTo',

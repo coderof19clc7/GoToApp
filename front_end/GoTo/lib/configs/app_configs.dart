@@ -39,8 +39,8 @@ class AppConfig{
     if (accessToken?.isNotEmpty == true) {
       initialRoute = RouteConstants.mainRoute;
     } else {
-      // initialRoute = RouteConstants.signInRoute;
-      initialRoute = RouteConstants.mainRoute;
+      initialRoute = RouteConstants.signInRoute;
+      // initialRoute = RouteConstants.mainRoute;
     }
 
     return this;

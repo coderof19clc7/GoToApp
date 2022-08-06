@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_to/configs/app_configs.dart';
 import 'package:go_to/configs/firebase_configs/firebase_options.dart';
+import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/cores/managers/local_storage_manager.dart';
 import 'package:go_to/cores/managers/network_manager.dart';
+import 'package:go_to/models/common/user_info.dart';
 
 final injector = GetIt.instance;
 
@@ -15,8 +17,7 @@ Future<void> initializeDependencies() async {
   injector.registerSingleton<LocalStorageManager>(LocalStorageManager.getInstance());
   injector.registerSingleton<AppConfig>(await AppConfig.getInstance());
 
-  // injector.registerSingleton<UserInfo>(await UserInfo.createInstance());
-
+  injector.registerSingleton<UserInfo>(UserInfo.createInstance());
 
   //init firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -24,6 +25,9 @@ Future<void> initializeDependencies() async {
   FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
   // FirebaseCrashlytics.instance.setUserIdentifier("7887");
   // FirebaseCrashlytics.instance.crash();
+  
+  //get realtime database reference
+  injector.registerSingleton(RealtimeDatabaseService.instance);
 
   //start fcm service
   // await FcmService.instance.startService();

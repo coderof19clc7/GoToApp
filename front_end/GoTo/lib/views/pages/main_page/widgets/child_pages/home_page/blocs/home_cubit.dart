@@ -4,9 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:go_to/configs/constants/dio_constants.dart';
+import 'package:go_to/configs/constants/network_constants/dio_constants.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
 import 'package:go_to/configs/constants/keys/map_keys.dart';
+import 'package:go_to/configs/constants/network_constants/open_route_service_constants.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/managers/network_manager.dart';
@@ -63,9 +64,9 @@ class HomeCubit extends Cubit<HomeState> {
   Future<AutocompleteOutput> _callORSAutocompleteApi(String inputText) async {
     return AutocompleteOutput.fromJson(await networkManager.request(
       dioOpenRouteService, RequestMethod.getMethod,
-      "${DioConstants.openRouteServiceBaseUrl}${DioConstants.openRouteServiceActions["autocomplete"]}?",
+      "${DioConstants.openRouteServiceApiPaths["autocompletePath"]}",
       queryParameters: {
-        "api_key": DioConstants.openRouteServiceApiKey, "text": inputText,
+        "api_key": OpenRouteServiceConstants.apiKey, "text": inputText,
       },
     ),);
   }
@@ -195,13 +196,9 @@ class HomeCubit extends Cubit<HomeState> {
         [endPointCoorString.longitude,endPointCoorString.latitude]];
     return DirectionOutput.fromJson(await networkManager.request(
       dioOpenRouteService, RequestMethod.postMethod,
-      "${DioConstants.openRouteServiceBaseUrl}"
-          "${DioConstants.openRouteServiceApiVer2}"
-          "${DioConstants.openRouteServiceActions["directions"]}"
-          "${DioConstants.openRouteServiceVehicle["driving-car"]}"
-          "${DioConstants.openRouteServiceOutputType["geojson"]}",
+      "${DioConstants.openRouteServiceApiPaths["directionPath"]}",
       headers: {
-        "Authorization": DioConstants.openRouteServiceApiKey,
+        "Authorization": OpenRouteServiceConstants.apiKey,
         "Content-type": "application/json; charset=utf-8",
       },
       data: {"coordinates": coordinateData},

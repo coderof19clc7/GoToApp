@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "57209906652",
+    "firebase_url": "https://gotoapp-357309-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "gotoapp-357309",
     "storage_bucket": "gotoapp-357309.appspot.com"
   },
@@ -29,6 +30,13 @@
             {
               "client_id": "57209906652-uciug0dk4e9n8af10omvn2p97necj1i6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "57209906652-lq65tgbmnpe1sulepakoctbc193hgbpv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.goTo"
+              }
             }
           ]
         }

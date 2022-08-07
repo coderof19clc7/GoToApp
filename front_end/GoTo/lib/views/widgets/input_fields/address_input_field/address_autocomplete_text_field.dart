@@ -5,19 +5,18 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
+import 'package:go_to/models/infos/location_info.dart';
 import 'package:go_to/utilities/helpers/debounce_helper.dart';
 import 'package:go_to/utilities/helpers/ui_helper.dart';
-import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/blocs/home_cubit.dart';
 
 class AddressAutocompleteTextField extends StatefulWidget {
   const AddressAutocompleteTextField({
-    Key? key, this.suggestedLocationList = const [],
+    Key? key,
     this.suggestionApiFetching, this.onOptionSelected, this.onClearText
   }) : super(key: key);
 
-  final List<SuggestedLocation>? suggestedLocationList;
-  final FutureOr<Iterable<SuggestedLocation>> Function(String text)? suggestionApiFetching;
-  final void Function(SuggestedLocation suggestedLocation)? onOptionSelected;
+  final FutureOr<Iterable<LocationInfo>> Function(String text)? suggestionApiFetching;
+  final void Function(LocationInfo suggestedLocation)? onOptionSelected;
   final void Function()? onClearText;
 
   @override
@@ -29,7 +28,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
   FocusNode focusNode = FocusNode();
   TextEditingController textEditingController = TextEditingController();
   String previousText = "";
-  List<SuggestedLocation> previousListSuggestion = [];
+  List<LocationInfo> previousListSuggestion = [];
 
   @override
   void initState() {
@@ -40,7 +39,6 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
 
   void onFocusNodeChanged() {
     setState(() {});
-    print(focusNode.hasFocus);
     if (textEditingController.text.isEmpty == true && focusNode.hasFocus == false) {
       //clear marker
       widget.onClearText?.call();
@@ -49,9 +47,8 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
 
   @override
   Widget build(BuildContext context) {
-    return TypeAheadField<SuggestedLocation>(
+    return TypeAheadField<LocationInfo>(
       debounceDuration: const Duration(milliseconds: 500),
-      hideSuggestionsOnKeyboardHide: !focusNode.hasFocus,
       suggestionsCallback: _suggestionsCallback,
       noItemsFoundBuilder: _buildNoItemFoundWidget,
       onSuggestionSelected: _onSuggestionSelected,
@@ -60,10 +57,12 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
     );
   }
 
-  FutureOr<Iterable<SuggestedLocation>> _suggestionsCallback(String text) async {
+  FutureOr<Iterable<LocationInfo>> _suggestionsCallback(String text) async {
     if (text.isEmpty || text.compareTo(previousText) != 0) {
       previousText = text;
-      previousListSuggestion = (await (widget.suggestionApiFetching?.call(text) ?? List<SuggestedLocation>.empty())).toList();
+      previousListSuggestion = (
+        await (widget.suggestionApiFetching?.call(text) ?? List<LocationInfo>.empty())
+      ).toList();
     }
     return previousListSuggestion;
   }
@@ -87,7 +86,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
     );
   }
 
-  void _onSuggestionSelected(SuggestedLocation suggestedLocation) {
+  void _onSuggestionSelected(LocationInfo suggestedLocation) {
     textEditingController.text = suggestedLocation.name ?? "";
     previousText = textEditingController.text;
     widget.onOptionSelected?.call(suggestedLocation);
@@ -130,7 +129,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
     );
   }
 
-  Widget _buildItem(BuildContext context, SuggestedLocation suggestedLocation) {
+  Widget _buildItem(BuildContext context, LocationInfo suggestedLocation) {
     final isSelfLocation = suggestedLocation.name?.compareTo(StringConstants.yourLocation) == 0;
     return ListTile(
       leading: Icon(

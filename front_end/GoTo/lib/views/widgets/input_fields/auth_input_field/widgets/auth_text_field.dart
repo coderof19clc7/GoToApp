@@ -66,14 +66,14 @@ class _AuthTextFieldState extends State<AuthTextField> {
     String getErrorText() {
       switch(widget.type) {
         case TextFieldTypeEnums.phone:
-          return "${StringConstants.phoneNumber} ${StringConstants.not_valid}";
+          return "${StringConstants.phoneNumber} ${StringConstants.notValid}";
         case TextFieldTypeEnums.name:
-          return "${StringConstants.name} ${StringConstants.cannot_be_empty}";
+          return "${StringConstants.name} ${StringConstants.cannotBeEmpty}";
         case TextFieldTypeEnums.password:
-          return "${StringConstants.password} ${StringConstants.must_include.toLowerCase()}";
+          return "${StringConstants.password} ${StringConstants.mustInclude.toLowerCase()}";
         case TextFieldTypeEnums.confirmPassword:
           return "${StringConstants.confirm + StringConstants.password.toLowerCase()} "
-              "${StringConstants.not_match_with.toLowerCase() + StringConstants.password.toLowerCase()}";
+              "${StringConstants.notMatchWith.toLowerCase() + StringConstants.password.toLowerCase()}";
         case TextFieldTypeEnums.normal:
           return "";
       }

@@ -27,13 +27,13 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
                 ? StringConstants.phoneNumber
                 : i == 1 ? StringConstants.password
                 : StringConstants.confirm +
-                StringConstants.password.toLowerCase()} ${StringConstants.cannot_be_empty.toLowerCase()}"
+                StringConstants.password.toLowerCase()} ${StringConstants.cannotBeEmpty.toLowerCase()}"
         );
       }
       else {
         if (i == 0) {
           if (!input[i].phoneNumberValidate()) {
-            errorList.add("${StringConstants.phoneNumber} ${StringConstants.not_valid.toLowerCase()}");
+            errorList.add("${StringConstants.phoneNumber} ${StringConstants.notValid.toLowerCase()}");
           }
           else {
             errorList.add("");
@@ -41,7 +41,7 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
         }
         else if (i == 1) {
           if (input[i].isEmpty) {
-            errorList.add("${StringConstants.name} ${StringConstants.cannot_be_empty.toLowerCase()}");
+            errorList.add("${StringConstants.name} ${StringConstants.cannotBeEmpty.toLowerCase()}");
           }
           else {
             errorList.add("");
@@ -49,7 +49,7 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
         }
         else if (i == 2) {
           if (!input[i].passwordValidate()) {
-            errorList.add("${StringConstants.password} ${StringConstants.must_include.toLowerCase()}");
+            errorList.add("${StringConstants.password} ${StringConstants.mustInclude.toLowerCase()}");
           }
           else {
             errorList.add("");
@@ -59,7 +59,7 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
           if (!input[i].confirmPasswordValidate(input[2])) {
             errorList.add(
               "${StringConstants.confirm} ${StringConstants.password.toLowerCase()} "
-                  "${StringConstants.not_match_with.toLowerCase()} ${StringConstants.password.toLowerCase()}",
+                  "${StringConstants.notMatchWith.toLowerCase()} ${StringConstants.password.toLowerCase()}",
             );
           }
           else {

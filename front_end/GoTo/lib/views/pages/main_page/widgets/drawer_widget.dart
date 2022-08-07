@@ -4,7 +4,7 @@ import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/generated/flutter_gen/assets.gen.dart';
-import 'package:go_to/models/common/user_info.dart';
+import 'package:go_to/models/infos/user_info.dart';
 import 'package:go_to/utilities/helpers/ui_helper.dart';
 import 'package:go_to/views/pages/main_page/blocs/main_cubit.dart';
 

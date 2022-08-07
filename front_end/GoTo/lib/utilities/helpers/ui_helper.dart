@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
+import 'package:go_to/models/infos/location_info.dart';
 import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/blocs/home_cubit.dart';
 import 'package:go_to/views/widgets/icons/location_icons/end_location_icon.dart';
 import 'package:go_to/views/widgets/icons/location_icons/start_location_icon.dart';
@@ -71,7 +72,7 @@ class UIHelper {
     );
   }
 
-  static Marker buildMarker(SuggestedLocation suggestedLocation) {
+  static Marker buildMarker(LocationInfo suggestedLocation) {
     return Marker(
       point: suggestedLocation.coordinates ?? LatLng(0, 0),
       builder: (BuildContext context) {
@@ -86,7 +87,7 @@ class UIHelper {
   static Polyline buildPolyline(List<LatLng> polylineData) {
     return Polyline(
       points: polylineData,
-      strokeWidth: 5.0,
+      strokeWidth: 7.0,
       color: ColorConstants.baseOrange,
     );
   }

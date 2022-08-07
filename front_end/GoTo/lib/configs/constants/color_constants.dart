@@ -23,6 +23,8 @@ class ColorConstants {
   static const baseBlue = Colors.blue;
   static const baseBlueAccent = Colors.blueAccent;
 
+  static final defaultNotificationColor = ColorExtensions.fromHex(hexString: "#9D50DD");
+
   static final defaultOrangeList = [
     lightOrange, orange,
   ];

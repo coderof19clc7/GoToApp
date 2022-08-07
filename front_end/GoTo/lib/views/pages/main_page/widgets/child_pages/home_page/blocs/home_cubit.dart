@@ -1,18 +1,18 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:go_to/configs/constants/network_constants/dio_constants.dart';
+import 'package:go_to/configs/constants/enums/booking_status_enums.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
 import 'package:go_to/configs/constants/keys/map_keys.dart';
-import 'package:go_to/configs/constants/network_constants/open_route_service_constants.dart';
+import 'package:go_to/configs/constants/network_constants/firebase_constants.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
+import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/managers/network_manager.dart';
-import 'package:go_to/models/ors_outputs/autocomplete_output.dart';
-import 'package:go_to/models/ors_outputs/direction_output.dart';
+import 'package:go_to/models/infos/location_info.dart';
+import 'package:go_to/models/infos/user_info.dart';
 import 'package:go_to/utilities/helpers/ui_helper.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -22,26 +22,26 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(const HomeState());
 
   final networkManager = injector<NetworkManager>();
-  final dioOpenRouteService = injector<NetworkManager>().getOpenRouteServiceDio();
+  List<Polyline> prePolylineList = [];
 
-  FutureOr<Iterable<SuggestedLocation>> getSuggestedList(LocationEnums locationEnum, String inputText) async {
+  FutureOr<Iterable<LocationInfo>> getSuggestedList(LocationEnums locationEnum, String inputText) async {
     //prepare variable
-    List<SuggestedLocation> suggestedLocationList = [
-      SuggestedLocation(name: StringConstants.yourLocation, locationEnum: locationEnum),
+    List<LocationInfo> suggestedLocationList = [
+      LocationInfo(name: StringConstants.yourLocation, locationEnum: locationEnum),
     ];
 
     //fetch api if user inputs somethings
     if (inputText.isNotEmpty) {
       //fetching api
       print(inputText);
-      final result = await _callORSAutocompleteApi(inputText);
+      final result = await ApiExecutor.callORSAutocompleteApi(inputText);
       print(result.toJson());
 
       //convert response to list suggested locations
       suggestedLocationList = result.features?.map((feature) {
         double? lat = feature.geometry?.coordinates?[1].toDouble();
         double? lng = feature.geometry?.coordinates?[0].toDouble();
-        return SuggestedLocation(
+        return LocationInfo(
           name: feature.properties?.label,
           coordinates: (lat != null && lng != null) ? LatLng(lat, lng) : null,
           locationEnum: locationEnum,
@@ -53,39 +53,14 @@ class HomeCubit extends Cubit<HomeState> {
       print(element.name);
     }
 
-    // if (locationEnum == LocationEnums.startPoint) {
-    //   emit(state.copyWith(startingPointSuggestions: suggestedLocationList));
-    // }
-    // else {
-    //   emit(state.copyWith(endingPointSuggestions: suggestedLocationList));
-    // }
     return suggestedLocationList;
   }
-  Future<AutocompleteOutput> _callORSAutocompleteApi(String inputText) async {
-    return AutocompleteOutput.fromJson(await networkManager.request(
-      dioOpenRouteService, RequestMethod.getMethod,
-      "${DioConstants.openRouteServiceApiPaths["autocompletePath"]}",
-      queryParameters: {
-        "api_key": OpenRouteServiceConstants.apiKey, "text": inputText,
-      },
-    ),);
-  }
 
-  void addMarkerListAt(SuggestedLocation selectedSuggestedLocation) {
-    // final List<SuggestedLocation>? tempList = locationEnum == LocationEnums.startPoint
-    //     ? state.startingPointSuggestions : state.endingPointSuggestions;
-    // final selectedOption = tempList?.firstWhere(
-    //   (suggestedLocation) => selectedSuggestedLocation.name?.compareTo(suggestedLocation.name ?? "") == 0
-    // ) ?? SuggestedLocation();
-
-    // locationEnum == LocationEnums.startPoint
-    //     ? emit(state.copyWith(chosenStartingPoint: selectedSuggestedLocation))
-    //     : emit(state.copyWith(chosenEndingPoint: selectedSuggestedLocation));
-
+  Future<void> addMarker(LocationInfo selectedSuggestedLocation) async {
     //prepare variable
     final keyToAdd = selectedSuggestedLocation.locationEnum == LocationEnums.startPoint
         ? MapKeys.startPoint : MapKeys.endPoint;
-    final tempSuggestedMap = Map<String, SuggestedLocation>.from(state.mapChosenSuggested ?? {});
+    final tempSuggestedMap = Map<String, LocationInfo>.from(state.mapChosenSuggested ?? {});
     final tempMarkerList = [...?state.listMarker];
     print('map: ${tempSuggestedMap.length}');
     print('list: ${tempMarkerList.length}');
@@ -108,6 +83,10 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }
     //add to or update mapChosenSuggested
+    bool willDrawPolyline = true;
+    if (tempSuggestedMap[keyToAdd]?.coordinates == selectedSuggestedLocation.coordinates) {
+      willDrawPolyline = false;
+    }
     tempSuggestedMap.addEntries({
       (selectedSuggestedLocation.locationEnum == LocationEnums.startPoint
           ? MapKeys.startPoint
@@ -118,29 +97,22 @@ class HomeCubit extends Cubit<HomeState> {
     print('map: ${tempSuggestedMap.length}');
     print('list: ${tempMarkerList.length}');
 
-    if (tempMarkerList.length >= 2 && state.listPolyline?.isEmpty == true) {
-      _drawPolylineRoute();
+    if (tempMarkerList.length >= 2) {
+      if (willDrawPolyline) {
+        prePolylineList.clear();
+        await _drawPolylineRoute();
+      }
+      else {
+        emit(state.copyWith(listPolyline: prePolylineList));
+      }
+      emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.showBookingInfo));
     }
   }
 
-  void removeMarkerListAt(LocationEnums locationEnum) {
-    // final locationToRemove = locationEnum == LocationEnums.startPoint
-    //     ? (state.mapChosenSuggested?['startPoint']) : (state.mapChosenSuggested?['endPoint']);
-    //
-    // if (locationToRemove != null){
-    //   final tempMarkerList = [...?state.listMarker];
-    //   tempMarkerList.removeWhere(
-    //     (marker) => marker.point == locationToRemove.coordinates
-    //   );
-    //   emit(state.copyWith(listMarker: tempMarkerList));
-    //   locationEnum == LocationEnums.startPoint
-    //       ? emit(state.copyWith(chosenStartingPoint: null))
-    //       : emit(state.copyWith(chosenEndingPoint: null));
-    // }
-
+  void removeMarker(LocationEnums locationEnum) {
     //prepare variable
     final keyToRemove = locationEnum == LocationEnums.startPoint ? MapKeys.startPoint : MapKeys.endPoint;
-    final tempSuggestedMap = Map<String, SuggestedLocation>.from(state.mapChosenSuggested ?? {});
+    final tempSuggestedMap = Map<String, LocationInfo>.from(state.mapChosenSuggested ?? {});
     final tempMarkerList = [...?state.listMarker];
     final tempPolylineList = [...?state.listPolyline];
     print('map: ${tempSuggestedMap.length}');
@@ -154,7 +126,7 @@ class HomeCubit extends Cubit<HomeState> {
       final willRemoveSth = marker.point == tempSuggestedMap[keyToRemove]?.coordinates;
         if (willRemoveSth) {
           print('OK will remove');
-          tempSuggestedMap.remove(keyToRemove);
+          // tempSuggestedMap.remove(keyToRemove);
           tempPolylineList.clear();
         }
         return willRemoveSth;
@@ -164,44 +136,55 @@ class HomeCubit extends Cubit<HomeState> {
     print('list: ${tempMarkerList.length}');
     emit(state.copyWith(
       listMarker: tempMarkerList, mapChosenSuggested: tempSuggestedMap,
-      listPolyline: tempPolylineList,
+      listPolyline: tempPolylineList, clientBookingStatusEnums: ClientBookingStatusEnums.none,
     ));
   }
 
   Future<void> _drawPolylineRoute() async {
-    final response = await _callORSDirectionApi();
-    print(response.toJson());
-
-    final polylineDataList = response.features?.map((feature) {
-      final geometry = feature.geometry;
-      return geometry?.coordinates?.map(
-        (coordinate) => LatLng(coordinate[1].toDouble(), coordinate[0].toDouble())
-      ).toList();
-    }).toList() ?? [];
-    if (polylineDataList.isNotEmpty) {
-      List<Polyline> tempPolylineList = [];
-      for (var polylineData in polylineDataList) {
-        if (polylineData?.isNotEmpty == true) {
-          tempPolylineList.add(UIHelper.buildPolyline(polylineData!));
-        }
-      }
-      emit(state.copyWith(listPolyline: tempPolylineList));
-    }
-  }
-  Future<DirectionOutput> _callORSDirectionApi() async {
     final startPointCoorString = state.mapChosenSuggested?[MapKeys.startPoint]?.coordinates ?? LatLng(0, 0);
     final endPointCoorString = state.mapChosenSuggested?[MapKeys.endPoint]?.coordinates ?? LatLng(0, 0);
-    final coordinateData =
-        [[startPointCoorString.longitude,startPointCoorString.latitude],
-        [endPointCoorString.longitude,endPointCoorString.latitude]];
-    return DirectionOutput.fromJson(await networkManager.request(
-      dioOpenRouteService, RequestMethod.postMethod,
-      "${DioConstants.openRouteServiceApiPaths["directionPath"]}",
-      headers: {
-        "Authorization": OpenRouteServiceConstants.apiKey,
-        "Content-type": "application/json; charset=utf-8",
-      },
-      data: {"coordinates": coordinateData},
-    ),);
+    final coordinateList = [
+      [startPointCoorString.longitude, startPointCoorString.latitude],
+      [endPointCoorString.longitude, endPointCoorString.latitude]
+    ];
+    final response = await ApiExecutor.callORSDirectionApi(coordinateList);
+    print(response.toJson());
+
+    final feature = response.features?[0];
+    if (feature != null) {
+      final polylineDataList = feature.geometry?.coordinates?.map((coordinate) {
+        return LatLng(coordinate[1].toDouble(), coordinate[0].toDouble());
+      }).toList() ?? [];
+      if (polylineDataList.isNotEmpty) {
+        List<Polyline> tempPolylineList = [];
+        tempPolylineList.add(UIHelper.buildPolyline(polylineDataList));
+        emit(state.copyWith(
+          listPolyline: tempPolylineList,
+          distance: (feature.properties?.summary?.distance?.toDouble() ?? 0)/1000,
+          timeEstimate: (feature.properties?.summary?.duration?.toDouble() ?? 0)/1000,
+        ));
+        prePolylineList = [...tempPolylineList];
+      }
+    }
+  }
+
+  Future<void> booking() async {
+    await injector<RealtimeDatabaseService>().ref.child(
+      "${FirebaseConstants.databaseChildPath["booking"]}"
+    ).set({
+      "phoneNumber": injector<UserInfo>().phone,
+      "name": injector<UserInfo>().name,
+      "startPoint": state.mapChosenSuggested?["startPoint"]?.toJson(),
+      "endPoint": state.mapChosenSuggested?["endPoint"]?.toJson(),
+    }).then((value) => emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.finding)));
+  }
+
+  Future<void> canceling() async {
+    await injector<RealtimeDatabaseService>().ref.child(
+        "${FirebaseConstants.databaseChildPath["booking"]}"
+    ).set({
+      "phoneNumber": injector<UserInfo>().phone,
+      "message": "cancelBooking",
+    }).then((value) => emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.showBookingInfo)));
   }
 }

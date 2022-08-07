@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
+import 'package:go_to/configs/constants/enums/location_enums.dart';
 import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/blocs/home_cubit.dart';
-import 'package:go_to/views/pages/main_page/widgets/home_widgets/map_field.dart';
+import 'package:go_to/views/pages/main_page/widgets/home_widgets/booking_information_field/booking_information_field.dart';
+import 'package:go_to/views/widgets/map_field/map_field.dart';
 import 'package:go_to/views/widgets/input_fields/address_input_field/address_input_field.dart';
 
 class HomePage extends StatelessWidget {
@@ -28,7 +30,7 @@ class _HomePageViewState extends State<HomePageView> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeCubit, HomeState>(
-      builder: (context, state) {
+      builder: (contextHome, state) {
         return SingleChildScrollView(
           child: Column(
             children: [
@@ -37,15 +39,35 @@ class _HomePageViewState extends State<HomePageView> {
               ),
 
               //input address field
-              const AddressInputField(),
+              AddressInputField(
+                startPointSuggestionApiFetching: (text) =>
+                  contextHome.read<HomeCubit>().getSuggestedList(LocationEnums.startPoint, text),
+                startPointOnOptionSelected: (locationToAdd) async =>
+                  await contextHome.read<HomeCubit>().addMarker(locationToAdd),
+                startPointOnClearText: () =>
+                  contextHome.read<HomeCubit>().removeMarker(LocationEnums.startPoint),
+                endPointSuggestionApiFetching: (text) =>
+                  contextHome.read<HomeCubit>().getSuggestedList(LocationEnums.endPoint, text),
+                endPointOnOptionSelected: (locationToAdd) async =>
+                  await contextHome.read<HomeCubit>().addMarker(locationToAdd),
+                endPointOnClearText: () =>
+                  contextHome.read<HomeCubit>().removeMarker(LocationEnums.endPoint),
+              ),
               SizedBox(
-                height: DimenConstants.getProportionalScreenHeight(context, 12),
+                height: DimenConstants.getProportionalScreenHeight(context, 20),
               ),
 
               //map field
-              const MapField(),
+              MapField(
+                listMarker: state.listMarker ?? [],
+                listPolyline: state.listPolyline ?? [],
+              ),
+              SizedBox(
+                height: DimenConstants.getProportionalScreenHeight(context, 20),
+              ),
 
               //booking information field
+              const BookingInformationField(),
             ],
           ),
         );

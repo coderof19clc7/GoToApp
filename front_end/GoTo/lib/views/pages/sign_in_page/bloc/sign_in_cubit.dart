@@ -9,7 +9,6 @@ import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/blocs/auth_bloc/auth_cubit.dart';
 import 'package:go_to/cores/managers/local_storage_manager.dart';
-import 'package:go_to/models/common/user_info.dart';
 
 part 'sign_in_state.dart';
 
@@ -72,11 +71,18 @@ class SignInCubit extends AuthCubit<SignInState> {
 
   Future<void> _onSignInSucceeded(String phone, String name, String type,
       String accessToken, String deviceToken,) async {
-    injector<UserInfo>().setData(phone, name, type);
-    await injector<LocalStorageManager>().setString(LocalStorageKeys.accessToken, accessToken);
-    await injector<LocalStorageManager>().setString(LocalStorageKeys.deviceToken, deviceToken);
+    await _saveUserDataToLocalStorage(phone, name, type, accessToken, deviceToken);
     emit(state.copyWith(authEnum: AuthEnum.signInSucceeded));
     showAuthenticateResultToast();
     Navigator.pushReplacementNamed(context!, RouteConstants.mainRoute);
+  }
+
+  Future<void> _saveUserDataToLocalStorage(String phone, String name, String type,
+      String accessToken, String deviceToken,) async {
+    await injector<LocalStorageManager>().setString(LocalStorageKeys.phoneNumber, phone);
+    await injector<LocalStorageManager>().setString(LocalStorageKeys.username, name);
+    await injector<LocalStorageManager>().setString(LocalStorageKeys.accountType, type);
+    await injector<LocalStorageManager>().setString(LocalStorageKeys.accessToken, accessToken);
+    await injector<LocalStorageManager>().setString(LocalStorageKeys.deviceToken, deviceToken);
   }
 }

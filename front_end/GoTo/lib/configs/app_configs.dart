@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_to/configs/constants/keys/storage_keys.dart';
 import 'package:go_to/configs/constants/route_constants.dart';
@@ -14,6 +15,7 @@ class AppConfig{
   double centerLat = 0, centerLng = 0;
   bool debugTag = false;
   int cacheDuration = 100;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
   AppConfig._init();
 

@@ -22,9 +22,12 @@ class StringConstants {
   static const yourLocation = "Vị trí của bạn";
   static const noResultFound = "Không tìm thấy kết quả tìm kiếm nào";
   static const booking = "Đặt xe";
+  static const findingDriver = "Đang tìm tài xế...";
   static const cancel = "Hủy";
   static const startPoint = "Điểm đi";
   static const endPoint = "Điểm đến";
   static const timeEstimate = "Thời gian dự kiến";
   static const distance = "Khoảng cách";
+  static const driver = "Tài xế";
+  static const willPickYouUp = "sẽ đến đón bạn";
 }

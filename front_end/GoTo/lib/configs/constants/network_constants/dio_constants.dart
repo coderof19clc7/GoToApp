@@ -8,6 +8,8 @@ class DioConstants {
   static final openRouteServiceApiPaths = {
     "autocompletePath": "${OpenRouteServiceConstants.baseUrl}"
         "${OpenRouteServiceConstants.actions["autocomplete"]}?",
+    "geocodeReversePath": "${OpenRouteServiceConstants.baseUrl}"
+      "${OpenRouteServiceConstants.actions["geocodeReverse"]}?",
     "directionPath": "${OpenRouteServiceConstants.baseUrl}"
         "${OpenRouteServiceConstants.apiVer2}"
         "${OpenRouteServiceConstants.actions["directions"]}"

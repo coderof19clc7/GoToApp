@@ -198,7 +198,7 @@
 // import 'package:go_to/views/widgets/icons/location_icons/start_location_icon.dart';
 // import 'package:latlong2/latlong.dart';
 //
-// part 'home_state.dart';
+// part 'client_home_state.dart';
 //
 // class HomeCubit extends Cubit<HomeState> {
 //   HomeCubit() : super(const HomeState());
@@ -293,7 +293,7 @@
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:go_to/configs/constants/dimen_constants.dart';
 // import 'package:go_to/configs/constants/enums/location_enums.dart';
-// import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/blocs/home_cubit.dart';
+// import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/blocs/client_home_cubit.dart';
 // import 'package:go_to/views/widgets/icons/location_icons/end_location_icon.dart';
 // import 'package:go_to/views/widgets/icons/location_icons/start_location_icon.dart';
 // import 'package:go_to/views/widgets/input_fields/address_input_field/address_autocomplete_text_field.dart';

@@ -6,7 +6,6 @@ import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
 import 'package:go_to/models/infos/location_info.dart';
-import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/blocs/home_cubit.dart';
 import 'package:go_to/views/widgets/icons/location_icons/end_location_icon.dart';
 import 'package:go_to/views/widgets/icons/location_icons/start_location_icon.dart';
 import 'package:latlong2/latlong.dart';

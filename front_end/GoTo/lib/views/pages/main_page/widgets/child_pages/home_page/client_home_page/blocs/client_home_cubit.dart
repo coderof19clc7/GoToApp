@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_to/configs/constants/enums/booking_status_enums.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
@@ -10,16 +11,17 @@ import 'package:go_to/configs/constants/network_constants/firebase_constants.dar
 import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/configs/injection.dart';
+import 'package:go_to/cores/blocs/home_bloc/home_cubit.dart';
 import 'package:go_to/cores/managers/network_manager.dart';
 import 'package:go_to/models/infos/location_info.dart';
 import 'package:go_to/models/infos/user_info.dart';
 import 'package:go_to/utilities/helpers/ui_helper.dart';
 import 'package:latlong2/latlong.dart';
 
-part 'home_state.dart';
+part 'client_home_state.dart';
 
-class HomeCubit extends Cubit<HomeState> {
-  HomeCubit() : super(const HomeState());
+class ClientHomeCubit extends HomeCubit<ClientHomeState> {
+  ClientHomeCubit() : super(state: const ClientHomeState());
 
   final networkManager = injector<NetworkManager>();
   List<Polyline> prePolylineList = [];
@@ -57,6 +59,18 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> addMarker(LocationInfo selectedSuggestedLocation) async {
+    if (selectedSuggestedLocation.name?.toLowerCase()
+        .compareTo(StringConstants.yourLocation.toLowerCase()) == 0) {
+      //get information of current location
+      final tempCoordinate = await getCurrentLocation();
+      String tempName = "-${await ApiExecutor.callORSGeocodeReverseApi(tempCoordinate)}";
+      tempName = "${StringConstants.yourLocation}$tempName";
+      selectedSuggestedLocation = LocationInfo(
+        name: tempName, coordinates: tempCoordinate,
+        locationEnum: selectedSuggestedLocation.locationEnum,
+      );
+    }
+
     //prepare variable
     final keyToAdd = selectedSuggestedLocation.locationEnum == LocationEnums.startPoint
         ? MapKeys.startPoint : MapKeys.endPoint;
@@ -82,6 +96,7 @@ class HomeCubit extends Cubit<HomeState> {
         tempMarkerList.add(UIHelper.buildMarker(selectedSuggestedLocation));
       }
     }
+
     //add to or update mapChosenSuggested
     bool willDrawPolyline = true;
     if (tempSuggestedMap[keyToAdd]?.coordinates == selectedSuggestedLocation.coordinates) {
@@ -161,7 +176,7 @@ class HomeCubit extends Cubit<HomeState> {
         emit(state.copyWith(
           listPolyline: tempPolylineList,
           distance: (feature.properties?.summary?.distance?.toDouble() ?? 0)/1000,
-          timeEstimate: (feature.properties?.summary?.duration?.toDouble() ?? 0)/1000,
+          timeEstimate: (feature.properties?.summary?.duration?.toDouble() ?? 0)/60,
         ));
         prePolylineList = [...tempPolylineList];
       }
@@ -174,8 +189,16 @@ class HomeCubit extends Cubit<HomeState> {
     ).set({
       "phoneNumber": injector<UserInfo>().phone,
       "name": injector<UserInfo>().name,
-      "startPoint": state.mapChosenSuggested?["startPoint"]?.toJson(),
-      "endPoint": state.mapChosenSuggested?["endPoint"]?.toJson(),
+      "startPoint": {
+        "name": state.mapChosenSuggested?["startPoint"]?.name?.split("-")[0],
+        "lat": state.mapChosenSuggested?["startPoint"]?.coordinates?.latitude,
+        "lng": state.mapChosenSuggested?["startPoint"]?.coordinates?.longitude,
+      },
+      "endPoint": {
+        "name": state.mapChosenSuggested?["endPoint"]?.name?.split("-")[0],
+        "lat": state.mapChosenSuggested?["endPoint"]?.coordinates?.latitude,
+        "lng": state.mapChosenSuggested?["endPoint"]?.coordinates?.longitude,
+      },
     }).then((value) => emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.finding)));
   }
 
@@ -186,5 +209,17 @@ class HomeCubit extends Cubit<HomeState> {
       "phoneNumber": injector<UserInfo>().phone,
       "message": "cancelBooking",
     }).then((value) => emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.showBookingInfo)));
+  }
+
+  @override
+  void onReceiveBookingResponse(RemoteMessage? remoteMessage) {
+    if (remoteMessage != null) {
+      final payload = Map<String, dynamic>.from(json.decode(remoteMessage.data["content"])["payload"]);
+      emit(state.copyWith(
+        driverName: payload["driverName"] ?? "",
+        driverPhone: payload["driverPhone"] ?? "",
+        clientBookingStatusEnums: ClientBookingStatusEnums.driverFound,
+      ));
+    }
   }
 }

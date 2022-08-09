@@ -8,6 +8,7 @@ import 'package:go_to/configs/firebase_configs/firebase_options.dart';
 import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/cores/managers/awesome_notification_manager.dart';
 import 'package:go_to/cores/managers/local_storage_manager.dart';
+import 'package:go_to/cores/managers/location_manager.dart';
 import 'package:go_to/cores/managers/network_manager.dart';
 import 'package:go_to/models/infos/user_info.dart';
 
@@ -32,13 +33,16 @@ Future<void> initializeDependencies() async {
   injector.registerSingleton(RealtimeDatabaseService.instance);
 
   //start fcm service
-  await FcmService.instance.startService();
+  // await FcmService.instance.startService();
 
   //init awesome notifications
   await AwesomeNotificationsManager.initialize();
 
-  // network
+  //network
   injector.registerSingleton<NetworkManager>(NetworkManager.getInstance());
   // injector.registerSingleton<RemoteConfigHelper>(RemoteConfigHelper.init());
   // injector.registerSingleton<ApiExecutor>(ApiExecutor());
+
+  //location
+  injector.registerSingleton<LocationManager>(LocationManager.getInstance());
 }

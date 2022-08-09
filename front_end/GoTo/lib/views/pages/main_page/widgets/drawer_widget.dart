@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
+import 'package:go_to/configs/constants/route_constants.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/generated/flutter_gen/assets.gen.dart';
@@ -86,7 +87,9 @@ class DrawerWidget extends StatelessWidget {
           //sign out choice
           _buildClickableItem(
             context, iconData: Icons.logout, label: StringConstants.signOut,
-            onTap: () => parentCubit.logout(parentContext),
+            onTap: () => parentCubit.logout(
+              () => Navigator.pushNamedAndRemoveUntil(context, RouteConstants.signInRoute, (route) => false)
+            ),
           ),
         ],
       ),

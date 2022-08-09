@@ -1,16 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_to/configs/app_configs.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/keys/notification_keys.dart';
-import 'package:go_to/configs/constants/keys/storage_keys.dart';
 import 'package:go_to/configs/injection.dart';
-import 'package:go_to/cores/managers/local_storage_manager.dart';
+import 'package:go_to/cores/blocs/notification_bloc/notification_cubit.dart';
 
 class AwesomeNotificationsManager {
-  static final _localStorageManager = injector<LocalStorageManager>();
-
   static Future<void> initialize() async {
     await AwesomeNotifications().initialize(
       //using the default app icon for notification logo
@@ -36,6 +37,9 @@ class AwesomeNotificationsManager {
       ],
       debug: true,
     );
+
+    //setup event listeners
+    await setupNotificationEventListen();
   }
 
   static Future<bool> checkNotificationPermission() async {
@@ -45,7 +49,6 @@ class AwesomeNotificationsManager {
           channelKey: NotificationKeys.basicChannelKey,
         );
       }
-      _saveNotificationPermissionState(true);
       return true;
     });
   }
@@ -56,6 +59,15 @@ class AwesomeNotificationsManager {
       print('OK');
       await AwesomeNotifications().createNotificationFromJsonData(message.data);
     }
+  }
+
+  static Future<void> setupNotificationEventListen() async {
+    await AwesomeNotifications().setListeners(
+      onActionReceivedMethod: onActionReceivedMethod,
+      onNotificationCreatedMethod: onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: onDismissActionReceivedMethod,
+    );
   }
 
   /// Use this method to detect when a new notification or a schedule is created
@@ -75,7 +87,8 @@ class AwesomeNotificationsManager {
 
   /// Use this method to detect when the user taps on a notification or action button
   static Future <void> onActionReceivedMethod(ReceivedAction receivedAction) async {
-    // Your code goes here
+    // Always ensure that all plugins was initialized
+    WidgetsFlutterBinding.ensureInitialized();
 
     // Navigate into pages, avoiding to open the notification details page over another details page already opened
     if (receivedAction.channelKey == NotificationKeys.basicChannelKey && Platform.isIOS) {
@@ -83,11 +96,15 @@ class AwesomeNotificationsManager {
         AwesomeNotifications().setGlobalBadgeCounter(badgeNumber - 1);
       });
     }
-    print('User clicked on a notification');
-  }
 
-  static Future<void> _saveNotificationPermissionState(bool permission) async {
-    await _localStorageManager.setBool(LocalStorageKeys.allowNotificationKey, permission);
+    //get data from notification and notify listeners
+    final context = injector<AppConfig>().navigatorKey.currentContext;
+    if (context != null) {
+      print('OK context not null');
+      BlocProvider.of<NotificationCubit>(context).onAppOpenedByAwesomeNotification(receivedAction);
+    }
+
+    print('User clicked on a notification');
   }
 
 // static Future<bool> redirectToPermissionsPage() async {

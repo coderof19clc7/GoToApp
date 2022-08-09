@@ -1,34 +1,36 @@
-part of 'home_cubit.dart';
+part of 'client_home_cubit.dart';
 
 @immutable
-class HomeState {
- const HomeState({
-  this.mapChosenSuggested = const {},
-  this.listMarker = const [], this.listPolyline = const [],
+class ClientHomeState extends HomeState {
+ const ClientHomeState({
+  super.mapChosenSuggested = const {},
+  super.listMarker = const [], super.listPolyline = const [],
   this.clientBookingStatusEnums = ClientBookingStatusEnums.none,
-  this.distance = 0, this.timeEstimate = 0,
+  super.distance = 0, super.timeEstimate = 0,
+  this.driverName, this.driverPhone,
  });
 
- final Map<String, LocationInfo>? mapChosenSuggested;
- final List<Marker>? listMarker;
- final List<Polyline>? listPolyline;
  final ClientBookingStatusEnums? clientBookingStatusEnums;
- final double distance;
- final double timeEstimate;
+ final String? driverName;
+ final String? driverPhone;
 
- HomeState copyWith({
+ @override
+  ClientHomeState copyWith({
   Map<String, LocationInfo>? mapChosenSuggested,
   List<Marker>? listMarker, List<Polyline>? listPolyline,
   ClientBookingStatusEnums? clientBookingStatusEnums,
   double? distance, double? timeEstimate,
+  String? driverName, String? driverPhone,
  }) {
-  return HomeState(
+  return ClientHomeState(
    mapChosenSuggested: mapChosenSuggested ?? this.mapChosenSuggested,
    listMarker: listMarker ?? this.listMarker,
    listPolyline: listPolyline ?? this.listPolyline,
    clientBookingStatusEnums: clientBookingStatusEnums ?? this.clientBookingStatusEnums,
    distance: distance ?? this.distance,
    timeEstimate: timeEstimate ?? this.timeEstimate,
+   driverName: driverName ?? this.driverName,
+   driverPhone: driverPhone ?? this.driverPhone,
   );
  }
 }

@@ -71,16 +71,15 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
     return Container(
       alignment: Alignment.center,
       height: DimenConstants.getProportionalScreenHeight(context, 200),
-      width: DimenConstants.getScreenWidth(context) * 0.5,
-      child: Center(
-        child: Text(
-          StringConstants.noResultFound,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: DimenConstants.getProportionalScreenWidth(context, 25),
-            fontWeight: FontWeight.w600,
-            color: ColorConstants.baseGrey,
-          ),
+      padding: EdgeInsets.symmetric(
+        horizontal: DimenConstants.getProportionalScreenWidth(context, 7),
+      ),
+      child: Text(
+        StringConstants.noResultFound, textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: DimenConstants.getProportionalScreenWidth(context, 25),
+          fontWeight: FontWeight.w600,
+          color: ColorConstants.baseGrey,
         ),
       ),
     );

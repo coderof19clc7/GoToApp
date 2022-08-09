@@ -48,6 +48,19 @@ class ApiExecutor {
     ),);
   }
 
+  static Future<String> callORSGeocodeReverseApi(LatLng latLng) async {
+    final result = await _networkManager.request(
+      _networkManager.getOpenRouteServiceDio(), RequestMethod.getMethod,
+      "${DioConstants.openRouteServiceApiPaths["geocodeReversePath"]}",
+      queryParameters: {
+        "api_key": OpenRouteServiceConstants.apiKey,
+        "point.lon": latLng.longitude, "point.lat": latLng.latitude,
+        "size": 1
+      }
+    );
+    return result?["features"][0]["properties"]["label"] ?? "";
+  }
+
   static Future<DirectionOutput> callORSDirectionApi(List<List<double>> coordinateList) async {
     return DirectionOutput.fromJson(await _networkManager.request(
       _networkManager.getOpenRouteServiceDio(), RequestMethod.postMethod,

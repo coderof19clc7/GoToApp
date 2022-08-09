@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/models/infos/location_info.dart';
-import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/blocs/home_cubit.dart';
+import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/client_home_page/blocs/client_home_cubit.dart';
 import 'package:go_to/views/widgets/icons/location_icons/end_location_icon.dart';
 import 'package:go_to/views/widgets/icons/location_icons/start_location_icon.dart';
 import 'package:go_to/views/widgets/input_fields/address_input_field/address_autocomplete_text_field.dart';
@@ -32,7 +32,7 @@ class AddressInputFieldState extends State<AddressInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
+    return BlocBuilder<ClientHomeCubit, ClientHomeState>(
       builder: (contextHome, state) {
         return Column(
           children: [

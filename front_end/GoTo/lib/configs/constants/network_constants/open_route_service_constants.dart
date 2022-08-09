@@ -4,6 +4,7 @@ class OpenRouteServiceConstants {
   static const apiVer2 = "/v2";
   static const actions = {
     "autocomplete": "/geocode/autocomplete",
+    "geocodeReverse": "/geocode/reverse",
     "directions": "/directions",
   };
   static const vehicles = {

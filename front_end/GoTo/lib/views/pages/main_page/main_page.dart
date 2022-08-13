@@ -67,8 +67,9 @@ class MainPage extends StatelessWidget {
   void _loadUserDataFromLocalStorage() {
     final localStorageManager = injector<LocalStorageManager>();
     injector<UserInfo>().setData(
+      localStorageManager.getString(LocalStorageKeys.userID),
       localStorageManager.getString(LocalStorageKeys.phoneNumber),
-      localStorageManager.getString(LocalStorageKeys.username),
+      localStorageManager.getString(LocalStorageKeys.name),
       localStorageManager.getString(LocalStorageKeys.accountType),
     );
   }

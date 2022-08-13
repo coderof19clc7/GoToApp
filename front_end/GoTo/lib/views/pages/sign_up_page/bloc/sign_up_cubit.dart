@@ -44,9 +44,9 @@ class SignUpCubit extends AuthCubit<SignUpState> {
       "${FirebaseConstants.databaseChildPath["register"]}",
     ).set({
       "phoneNumber": phoneNumber, "password": password, "accountType": "Customer",
-      "time": DateTime.now().toString(),
+      "name": name, "time": DateTime.now().toString(),
     });
-    databaseRef.ref.child(
+    authListener = databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["registerStatus"]}",
     ).onValue.listen((event) async {
       final data = Map<String, dynamic>.from((event.snapshot.value ?? {}) as Map<dynamic, dynamic>);
@@ -56,8 +56,9 @@ class SignUpCubit extends AuthCubit<SignUpState> {
           _onSignUpSucceeded();
         } else {
           emit(state.copyWith(authEnum: AuthEnum.signInFailed));
-          showAuthenticateResultToast(isSuccessful: false, message:  "${data["message"]}",);
+          showAuthenticateResultToast(isSuccessful: false, message:  "${data["error"]}",);
         }
+        authListener?.cancel();
       }
     });
   }

@@ -7,6 +7,7 @@ import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/blocs/notification_bloc/notification_cubit.dart';
 import 'package:go_to/cores/managers/location_manager.dart';
 import 'package:go_to/models/infos/location_info.dart';
+import 'package:go_to/utilities/helpers/ui_helper.dart';
 import 'package:latlong2/latlong.dart';
 
 part 'home_state.dart';
@@ -17,14 +18,21 @@ abstract class HomeCubit<State> extends Cubit<State> {
     if (context != null) {
       notificationCubit = BlocProvider.of<NotificationCubit>(context);
       notificationCubit?.stream.listen((event) {
-        onReceiveBookingResponse(event.message);
+        onReceiveBookingNotification(event.message);
       });
     }
   }
 
   NotificationCubit? notificationCubit;
+  MapController? mapController;
 
-  void onReceiveBookingResponse(RemoteMessage? remoteMessage);
+  @protected
+  Future<void> drawPolylineRoute();
+  void onReceiveBookingNotification(RemoteMessage? remoteMessage);
+
+  void showCancelToast(String message) {
+    UIHelper.showErrorToast(message);
+  }
 
   Future<LatLng> getCurrentLocation() async {
     final currentPosition = await LocationManager.requestPermissionLocation();

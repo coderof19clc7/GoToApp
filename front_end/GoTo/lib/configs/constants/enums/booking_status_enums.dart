@@ -1,4 +1,6 @@
 enum ClientBookingStatusEnums {
   none, showBookingInfo, finding, driverFound, canceled, driverCanceled,
 }
-enum DriverBookingStatusEnums {accepted, canceled, clientCanceled, clientFound}
+enum DriverBookingStatusEnums {
+  none, accepted, clientCanceled, clientFound, finished,
+}

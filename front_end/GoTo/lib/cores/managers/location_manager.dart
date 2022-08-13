@@ -4,7 +4,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_to/configs/constants/network_constants/firebase_constants.dart';
 import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/configs/injection.dart';
+import 'package:go_to/cores/managers/network_manager.dart';
 import 'package:go_to/models/infos/user_info.dart';
+import 'package:latlong2/latlong.dart';
 
 class LocationManager {
   static LocationManager? _instance;
@@ -71,10 +73,10 @@ class LocationManager {
       desiredAccuracy: LocationAccuracy.high,
     );
     currentPosition = position;
-    updateLocationToFirebase();
+    await updateLocationToFirebase();
 
-    print('position longitude: ' + position.longitude.toString());
-    print('position latitude: ' + position.latitude.toString());
+    print('position longitude: ${position.longitude}');
+    print('position latitude: ${position.latitude}');
     return position;
   }
 
@@ -109,16 +111,20 @@ class LocationManager {
     });
   }
 
-  static void updateLocationToFirebase() {
+  static Future<void> updateLocationToFirebase() async {
     final user = injector<UserInfo>();
+    final locationLatLng = LatLng(currentPosition?.latitude ?? 0, currentPosition?.longitude ?? 0);
+    final locationName = await ApiExecutor.callORSGeocodeReverseApi(locationLatLng);
     if (user.type?.toLowerCase().compareTo("Customer".toLowerCase()) != 0) {
       injector<RealtimeDatabaseService>().ref.child(
         FirebaseConstants.databaseChildPath["currentLocationUpdate"] ?? "",
       ).set({
+        "id": user.id,
         "phoneNumber": user.phone,
         "currentLocation": {
-          "lat": currentPosition?.latitude ?? 0,
-          "lng": currentPosition?.longitude ?? 0,
+          "name": locationName,
+          "lat": locationLatLng.latitude,
+          "lng": locationLatLng.longitude,
         },
       });
     }

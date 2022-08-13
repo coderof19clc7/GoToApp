@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
 import 'package:go_to/views/pages/main_page/widgets/child_pages/home_page/client_home_page/blocs/client_home_cubit.dart';
@@ -27,10 +28,12 @@ class ClientHomePageView extends StatefulWidget {
 }
 
 class _ClientHomePageViewState extends State<ClientHomePageView> {
+  final mapController = MapController();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ClientHomeCubit, ClientHomeState>(
       builder: (contextHome, state) {
+        contextHome.read<ClientHomeCubit>().mapController = mapController;
         return SingleChildScrollView(
           child: Column(
             children: [
@@ -59,6 +62,7 @@ class _ClientHomePageViewState extends State<ClientHomePageView> {
 
               //map field
               MapField(
+                mapController: mapController,
                 listMarker: state.listMarker ?? [],
                 listPolyline: state.listPolyline ?? [],
               ),

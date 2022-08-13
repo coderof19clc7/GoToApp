@@ -30,4 +30,6 @@ class StringConstants {
   static const distance = "Khoảng cách";
   static const driver = "Tài xế";
   static const willPickYouUp = "sẽ đến đón bạn";
+  static const customer = "Khách";
+  static const had = "Đã";
 }

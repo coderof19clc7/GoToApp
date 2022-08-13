@@ -71,11 +71,11 @@ class UIHelper {
     );
   }
 
-  static Marker buildMarker(LocationInfo suggestedLocation) {
+  static Marker buildMarker(LocationInfo locationInfo) {
     return Marker(
-      point: suggestedLocation.coordinates ?? LatLng(0, 0),
+      point: locationInfo.coordinates ?? LatLng(0, 0),
       builder: (BuildContext context) {
-        return suggestedLocation.locationEnum ==
+        return locationInfo.locationEnum ==
             LocationEnums.startPoint
             ? const StartLocationIcon()
             : const EndLocationIcon();

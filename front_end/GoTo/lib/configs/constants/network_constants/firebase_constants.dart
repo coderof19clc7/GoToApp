@@ -5,6 +5,7 @@ class FirebaseConstants {
     "register": "/register",
     "registerStatus": "/registerStatus",
     "logout": "/logout",
+    "logoutStatus": "/logoutStatus",
     "booking": "/booking",
     "currentLocationUpdate": "/currentLocationUpdate",
   };

@@ -58,31 +58,34 @@ class SignInCubit extends AuthCubit<SignInState> {
       if (data["phoneNumber"]?.toString().compareTo(phoneNumber) == 0) {
         if (data["successful"] == true) {
           await _onSignInSucceeded(
-            data["phoneNumber"], data["username"], data["accountType"],
-            data["token"], deviceToken,
+            data["id"] ?? "", data["phoneNumber"] ?? "", data["name"] ?? "",
+            data["accountType"] ?? "", data["token"] ?? "", deviceToken,
           );
         } else {
           emit(state.copyWith(authEnum: AuthEnum.signInFailed));
           showAuthenticateResultToast(isSuccessful: false);
         }
+        authListener?.cancel();
       }
     });
   }
 
-  Future<void> _onSignInSucceeded(String phone, String name, String type,
+  Future<void> _onSignInSucceeded(String id, String phone, String name, String type,
       String accessToken, String deviceToken,) async {
-    await _saveUserDataToLocalStorage(phone, name, type, accessToken, deviceToken);
+    await _saveUserDataToLocalStorage(id, phone, name, type, accessToken, deviceToken);
     emit(state.copyWith(authEnum: AuthEnum.signInSucceeded));
     showAuthenticateResultToast();
     Navigator.pushReplacementNamed(context!, RouteConstants.mainRoute);
   }
 
-  Future<void> _saveUserDataToLocalStorage(String phone, String name, String type,
+  Future<void> _saveUserDataToLocalStorage(String id, String phone, String name, String type,
       String accessToken, String deviceToken,) async {
-    await injector<LocalStorageManager>().setString(LocalStorageKeys.phoneNumber, phone);
-    await injector<LocalStorageManager>().setString(LocalStorageKeys.username, name);
-    await injector<LocalStorageManager>().setString(LocalStorageKeys.accountType, type);
-    await injector<LocalStorageManager>().setString(LocalStorageKeys.accessToken, accessToken);
-    await injector<LocalStorageManager>().setString(LocalStorageKeys.deviceToken, deviceToken);
+    final localStorageManager = injector<LocalStorageManager>();
+    await localStorageManager.setString(LocalStorageKeys.userID, id);
+    await localStorageManager.setString(LocalStorageKeys.phoneNumber, phone);
+    await localStorageManager.setString(LocalStorageKeys.name, name);
+    await localStorageManager.setString(LocalStorageKeys.accountType, type);
+    await localStorageManager.setString(LocalStorageKeys.accessToken, accessToken);
+    await localStorageManager.setString(LocalStorageKeys.deviceToken, deviceToken);
   }
 }

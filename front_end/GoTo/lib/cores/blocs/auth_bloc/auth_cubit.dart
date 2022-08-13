@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_to/configs/constants/enums/auth_enums.dart';
@@ -15,6 +18,7 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
 
   final String defaultErrMessage;
   final String authAction;
+  StreamSubscription<DatabaseEvent>? authListener;
   BuildContext? context;
 
   List<String> validateInput(List<String> input) {
@@ -73,13 +77,13 @@ abstract class AuthCubit<AuthState> extends Cubit<AuthState> {
   }
 
   @protected
-  void showAuthenticateResultToast({bool isSuccessful = true, String message = ""}) {
+  void showAuthenticateResultToast({bool isSuccessful = true, String? message}) {
     if (isSuccessful) {
       UIHelper.showSuccessToast("$authAction ${StringConstants.success.toLowerCase()}.",);
     }
     else {
       UIHelper.showErrorToast("$authAction ${StringConstants.failed.toLowerCase()}\n"
-          "${message.isNotEmpty ? message : defaultErrMessage}");
+          "${message?.isNotEmpty == true ? message : defaultErrMessage}");
     }
   }
 }

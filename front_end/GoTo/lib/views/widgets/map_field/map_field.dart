@@ -1,38 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:go_to/configs/app_configs.dart';
+import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/dimen_constants.dart';
 import 'package:go_to/configs/injection.dart';
+import 'package:go_to/models/infos/user_info.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapField extends StatefulWidget {
   const MapField({
     Key? key, this.listMarker = const [], this.listPolyline = const [],
-    this.mapController,
+    this.mapController, this.initialCenterLat, this.initialCenterLng,
+    this.initialZoom = 14.0, this.maxZoom = 17.0,
   }) : super(key: key);
 
   final List<Marker> listMarker;
   final List<Polyline> listPolyline;
   final MapController? mapController;
+  final double? initialCenterLat;
+  final double? initialCenterLng;
+  final double initialZoom, maxZoom;
 
   @override
   State<MapField> createState() => _MapFieldState();
 }
 
 class _MapFieldState extends State<MapField> {
-  double initialZoom = 14.0, maxZoom = 17.0;
-
   @override
   Widget build(BuildContext context) {
     final appConfigs = injector<AppConfig>();
+    final currentLocationSize = DimenConstants.getProportionalScreenWidth(context, DimenConstants.baseIconSize);
     return SizedBox(
       height: DimenConstants.getScreenHeight(context) * 0.6,
       child: FlutterMap(
         mapController: widget.mapController,
         options: MapOptions(
-          center: LatLng(appConfigs.centerLat, appConfigs.centerLng),
+          center: LatLng(
+            widget.initialCenterLat ?? appConfigs.centerLat,
+            widget.initialCenterLng ?? appConfigs.centerLng,
+          ),
           controller: widget.mapController,
-          zoom: initialZoom, maxZoom: maxZoom,
+          zoom: widget.initialZoom, maxZoom: widget.maxZoom,
         ),
         layers: [
           TileLayerOptions(
@@ -45,8 +54,26 @@ class _MapFieldState extends State<MapField> {
           PolylineLayerOptions(
             polylines: widget.listPolyline,
           ),
+          if (injector<UserInfo>().type?.toLowerCase().compareTo(
+              "Customer".toLowerCase()) != 0) ...[
+            LocationMarkerLayerOptions(
+              marker: DefaultLocationMarker(
+                color: ColorConstants.orange,
+              ),
+              markerSize: Size(currentLocationSize, currentLocationSize),
+              showAccuracyCircle: false,
+              headingSectorRadius: 30,
+              headingSectorColor: ColorConstants.lightOrange,
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    widget.mapController?.dispose();
+    super.dispose();
   }
 }

@@ -63,8 +63,8 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
         .compareTo(StringConstants.yourLocation.toLowerCase()) == 0) {
       //get information of current location
       final tempCoordinate = await getCurrentLocation();
-      String tempName = "-${await ApiExecutor.callORSGeocodeReverseApi(tempCoordinate)}";
-      tempName = "${StringConstants.yourLocation}$tempName";
+      String tempName = await ApiExecutor.callORSGeocodeReverseApi(tempCoordinate);
+      tempName = "${StringConstants.yourLocation}-$tempName";
       selectedSuggestedLocation = LocationInfo(
         name: tempName, coordinates: tempCoordinate,
         locationEnum: selectedSuggestedLocation.locationEnum,
@@ -115,7 +115,7 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     if (tempMarkerList.length >= 2) {
       if (willDrawPolyline) {
         prePolylineList.clear();
-        await _drawPolylineRoute();
+        await drawPolylineRoute();
       }
       else {
         emit(state.copyWith(listPolyline: prePolylineList));
@@ -155,7 +155,8 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     ));
   }
 
-  Future<void> _drawPolylineRoute() async {
+  @override
+  Future<void> drawPolylineRoute() async {
     final startPointCoorString = state.mapChosenSuggested?[MapKeys.startPoint]?.coordinates ?? LatLng(0, 0);
     final endPointCoorString = state.mapChosenSuggested?[MapKeys.endPoint]?.coordinates ?? LatLng(0, 0);
     final coordinateList = [
@@ -184,18 +185,23 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
   }
 
   Future<void> booking() async {
+    final startPointName = state.mapChosenSuggested?["startPoint"]?.name ?? "";
+    final endPointName = state.mapChosenSuggested?["endPoint"]?.name ?? "";
+
     await injector<RealtimeDatabaseService>().ref.child(
       "${FirebaseConstants.databaseChildPath["booking"]}"
     ).set({
+      "id": injector<UserInfo>().id,
       "phoneNumber": injector<UserInfo>().phone,
-      "name": injector<UserInfo>().name,
       "startPoint": {
-        "name": state.mapChosenSuggested?["startPoint"]?.name?.split("-")[0],
+        "name": startPointName.contains(StringConstants.yourLocation)
+            ? startPointName.split("${StringConstants.yourLocation}-")[1] : startPointName,
         "lat": state.mapChosenSuggested?["startPoint"]?.coordinates?.latitude,
         "lng": state.mapChosenSuggested?["startPoint"]?.coordinates?.longitude,
       },
       "endPoint": {
-        "name": state.mapChosenSuggested?["endPoint"]?.name?.split("-")[0],
+        "name": endPointName.contains(StringConstants.yourLocation)
+            ? endPointName.split("${StringConstants.yourLocation}-")[1] : endPointName,
         "lat": state.mapChosenSuggested?["endPoint"]?.coordinates?.latitude,
         "lng": state.mapChosenSuggested?["endPoint"]?.coordinates?.longitude,
       },
@@ -204,15 +210,15 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
 
   Future<void> canceling() async {
     await injector<RealtimeDatabaseService>().ref.child(
-        "${FirebaseConstants.databaseChildPath["booking"]}"
+        "${FirebaseConstants.databaseChildPath["bookingStatus"]}"
     ).set({
-      "phoneNumber": injector<UserInfo>().phone,
-      "message": "cancelBooking",
+      "customerId": injector<UserInfo>().id,
+      "keyword": "cancel",
     }).then((value) => emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.showBookingInfo)));
   }
 
   @override
-  void onReceiveBookingResponse(RemoteMessage? remoteMessage) {
+  void onReceiveBookingNotification(RemoteMessage? remoteMessage) {
     if (remoteMessage != null) {
       final payload = Map<String, dynamic>.from(json.decode(remoteMessage.data["content"])["payload"]);
       emit(state.copyWith(

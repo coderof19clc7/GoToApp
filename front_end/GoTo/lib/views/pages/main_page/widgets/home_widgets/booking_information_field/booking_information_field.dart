@@ -68,13 +68,19 @@ class BookingInformationField extends StatelessWidget {
     switch(state.clientBookingStatusEnums) {
       case ClientBookingStatusEnums.showBookingInfo:
       case ClientBookingStatusEnums.canceled:
-      case ClientBookingStatusEnums.driverCanceled:
+      case ClientBookingStatusEnums.driverCanceled: {
+        final startPointName = state.mapChosenSuggested?["startPoint"]?.name ?? "";
+        final endPointName = state.mapChosenSuggested?["endPoint"]?.name ?? "";
+
         return ShowBookingInformation(
-          startPoint: state.mapChosenSuggested?["startPoint"]?.name?.split("-")[0] ?? "",
-          endPoint: state.mapChosenSuggested?["endPoint"]?.name?.split("-")[0] ?? "",
+          startPoint: startPointName.contains(StringConstants.yourLocation)
+              ? StringConstants.yourLocation : startPointName,
+          endPoint: endPointName.contains(StringConstants.yourLocation)
+              ? StringConstants.yourLocation : endPointName,
           timeEstimate: state.timeEstimate.toString(),
           distance: state.distance.toString(),
         );
+      }
       case ClientBookingStatusEnums.finding:
         return const WaitingForDriver();
       case ClientBookingStatusEnums.driverFound:

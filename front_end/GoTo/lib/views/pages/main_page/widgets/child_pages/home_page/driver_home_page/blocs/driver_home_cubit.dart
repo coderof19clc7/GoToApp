@@ -6,11 +6,17 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:go_to/configs/constants/enums/booking_status_enums.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
 import 'package:go_to/configs/constants/keys/map_keys.dart';
+import 'package:go_to/configs/constants/keys/storage_keys.dart';
+import 'package:go_to/configs/constants/network_constants/firebase_constants.dart';
 import 'package:go_to/configs/constants/string_constants.dart';
+import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
+import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/blocs/home_bloc/home_cubit.dart';
+import 'package:go_to/cores/managers/local_storage_manager.dart';
 import 'package:go_to/cores/managers/location_manager.dart';
 import 'package:go_to/cores/managers/network_manager.dart';
 import 'package:go_to/models/infos/location_info.dart';
+import 'package:go_to/models/infos/user_info.dart';
 import 'package:go_to/utilities/helpers/ui_helper.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -18,6 +24,9 @@ part 'driver_home_state.dart';
 
 class DriverHomeCubit extends HomeCubit<DriverHomeState> {
   DriverHomeCubit() : super(state: const DriverHomeState());
+
+  final databaseRef = injector<RealtimeDatabaseService>();
+  final userInfo = injector<UserInfo>();
 
   void _onReceivedBookingOrder(Map<String, dynamic> payload) async {
     //get information of show start point and end point and add marker for them
@@ -41,6 +50,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
 
     //change state to show customer information
     emit(state.copyWith(
+      customerID: payload["customerId"] ?? "",
       customerName: payload["customerName"] ?? "",
       customerPhone: payload["phoneNumber"] ?? "",
       driverBookingStatusEnums: DriverBookingStatusEnums.clientFound,
@@ -87,27 +97,46 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
           distance: (feature.properties?.segments?[1].distance?.toDouble() ?? 0)/1000,
           timeEstimate: (feature.properties?.segments?[1].duration?.toDouble() ?? 0)/60,
           distanceToCustomer: (feature.properties?.segments?[0].distance?.toDouble() ?? 0)/1000,
-          timeEstimateToCustomer: (feature.properties?.segments?[0].duration?.toDouble() ?? 0)/60
+          timeEstimateToCustomer: (feature.properties?.segments?[0].duration?.toDouble() ?? 0)/60,
         ));
       }
     }
   }
 
   Future<void> onAcceptBookingOrder() async {
-
+    await databaseRef.ref.child(
+      "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
+    ).set({
+      "driverID": userInfo.id,
+      "driverName": userInfo.name,
+      "driverPhone": userInfo.phone,
+    }).then((value) async {
+      await databaseRef.ref.child(
+        "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+      ).remove();
+    });
   }
 
   Future<void> onFinishBookingOrder() async {
 
   }
 
-  void _onBookingOrderCanceled() {
-    showCancelToast(
-      "${StringConstants.customer} ${StringConstants.had} "
-          "${StringConstants.cancel} ${StringConstants.booking}",
-    );
-    emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.clientCanceled));
+  void onBookingOrderCanceled(String reason) async {
+    final cancelMessage = (reason.compareTo("cancel") == 0)
+        ? "${StringConstants.customer} ${StringConstants.had} "
+        "${StringConstants.cancel} ${StringConstants.booking}"
+        : "${StringConstants.you} ${StringConstants.had} ${StringConstants.reject}";
+    showCancelToast(cancelMessage);
+    emit(state.copyWith(
+      driverBookingStatusEnums: (reason.compareTo("cancel") == 0)
+          ? DriverBookingStatusEnums.clientCanceled
+          : DriverBookingStatusEnums.rejected,
+    ));
     _clearCustomerBookingInformation();
+
+    await databaseRef.ref.child(
+      "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+    ).set(injector<LocalStorageManager>().getString(LocalStorageKeys.deviceToken));
   }
 
   void _clearCustomerBookingInformation() {
@@ -125,12 +154,12 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
   void onReceiveBookingNotification(RemoteMessage? remoteMessage) {
     if (remoteMessage != null) {
       final payload = Map<String, dynamic>.from(json.decode(remoteMessage.data["content"])["payload"]);
-      final notificationMessage = payload["message"] ?? "";
+      final notificationMessage = payload["type"] ?? "";
       if (notificationMessage.compareTo("booking") == 0) {
         _onReceivedBookingOrder(payload);
       }
       else if (notificationMessage.compareTo("cancel") == 0) {
-        _onBookingOrderCanceled();
+        onBookingOrderCanceled("cancel");
       }
     }
   }

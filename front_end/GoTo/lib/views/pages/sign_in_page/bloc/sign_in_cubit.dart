@@ -73,6 +73,11 @@ class SignInCubit extends AuthCubit<SignInState> {
   Future<void> _onSignInSucceeded(String id, String phone, String name, String type,
       String accessToken, String deviceToken,) async {
     await _saveUserDataToLocalStorage(id, phone, name, type, accessToken, deviceToken);
+    if (type.toLowerCase().compareTo("Customer".toLowerCase()) != 0) {
+      await databaseRef.ref.child(
+        "${FirebaseConstants.databaseChildPath["availableDrivers"]}/$id",
+      ).set(deviceToken);
+    }
     emit(state.copyWith(authEnum: AuthEnum.signInSucceeded));
     showAuthenticateResultToast();
     Navigator.pushReplacementNamed(context!, RouteConstants.mainRoute);

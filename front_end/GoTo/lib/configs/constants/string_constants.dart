@@ -32,4 +32,15 @@ class StringConstants {
   static const willPickYouUp = "sẽ đến đón bạn";
   static const customer = "Khách";
   static const had = "Đã";
+  static const you = "Bạn";
+  static const reject = "Từ chối";
+  static const notAvailable = "Không khả dụng";
+  static const accept = "Chấp nhận";
+  static const client = "Khách";
+  static const want = "Muốn";
+  static const go = "Đi";
+  static const from = "Từ";
+  static const need = "Cần";
+  static const pickUp = "Đón";
+  static const arrive = "Đến";
 }

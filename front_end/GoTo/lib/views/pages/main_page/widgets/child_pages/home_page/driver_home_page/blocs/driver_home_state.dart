@@ -8,9 +8,10 @@ class DriverHomeState extends HomeState {
     this.driverBookingStatusEnums = DriverBookingStatusEnums.none,
     super.distance = 0, super.timeEstimate = 0,
     this.distanceToCustomer = 0, this.timeEstimateToCustomer = 0,
-    this.customerName, this.customerPhone,
+    this.customerID, this.customerName, this.customerPhone,
   });
 
+  final String? customerID;
   final String? customerName;
   final String? customerPhone;
   final double? distanceToCustomer;
@@ -24,7 +25,7 @@ class DriverHomeState extends HomeState {
     DriverBookingStatusEnums? driverBookingStatusEnums,
     double? distance, double? timeEstimate,
     double? distanceToCustomer, double? timeEstimateToCustomer,
-    String? customerName, String? customerPhone,
+    String? customerID, String? customerName, String? customerPhone,
   }) {
     return DriverHomeState(
       mapChosenSuggested: mapChosenSuggested ?? this.mapChosenSuggested,
@@ -35,6 +36,7 @@ class DriverHomeState extends HomeState {
       timeEstimate: timeEstimate ?? this.timeEstimate,
       distanceToCustomer: distanceToCustomer ?? this.distanceToCustomer,
       timeEstimateToCustomer: timeEstimateToCustomer ?? this.timeEstimateToCustomer,
+      customerID: customerID ?? this.customerID,
       customerName: customerName ?? this.customerName,
       customerPhone: customerPhone ?? this.customerPhone,
     );

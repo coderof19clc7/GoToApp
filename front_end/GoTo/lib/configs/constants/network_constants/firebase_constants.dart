@@ -7,6 +7,9 @@ class FirebaseConstants {
     "logout": "/logout",
     "logoutStatus": "/logoutStatus",
     "booking": "/booking",
+    "bookingResponse": "/bookingResponse",
+    "bookingStatus": "/bookingStatus",
     "currentLocationUpdate": "/currentLocationUpdate",
+    "availableDrivers": "/availableDrivers",
   };
 }

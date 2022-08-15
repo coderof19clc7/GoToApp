@@ -19,7 +19,8 @@ part 'main_state.dart';
 class MainCubit extends Cubit<MainState> {
   MainCubit() : super(const MainState());
 
-  AppConfig appConfig = injector<AppConfig>();
+  final appConfig = injector<AppConfig>();
+  final userInfo = injector<UserInfo>();
   StreamSubscription<Position>? streamSubscriptionPosition;
   StreamSubscription<DatabaseEvent>? logoutListener;
 
@@ -49,6 +50,11 @@ class MainCubit extends Cubit<MainState> {
       final data = Map<String, dynamic>.from((event.snapshot.value ?? {}) as Map<dynamic, dynamic>);
       if (data["phoneNumber"]?.toString().compareTo(phoneNumber) == 0) {
         if (data["successful"] == true) {
+          if (userInfo.type?.toLowerCase().compareTo("Customer".toLowerCase()) != 0) {
+            await injector<RealtimeDatabaseService>().ref.child(
+              "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+            ).remove();
+          }
           injector<LocalStorageManager>().clearAll();
           await streamSubscriptionPosition?.cancel();
           backToLogin.call();

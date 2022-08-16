@@ -110,15 +110,19 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
       "driverID": userInfo.id,
       "driverName": userInfo.name,
       "driverPhone": userInfo.phone,
-    }).then((value) async {
-      await databaseRef.ref.child(
-        "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
-      ).remove();
     });
+    emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.waitToConfirmAcceptation));
   }
 
-  Future<void> onFinishBookingOrder() async {
+  Future<void> _onAcceptationConfirmed() async {
+    await databaseRef.ref.child(
+      "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+    ).remove();
+    emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.accepted));
+  }
 
+  Future<void> onFinishTrip() async {
+    emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.finished));
   }
 
   void onBookingOrderCanceled(String reason) async {
@@ -155,11 +159,19 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
     if (remoteMessage != null) {
       final payload = Map<String, dynamic>.from(json.decode(remoteMessage.data["content"])["payload"]);
       final notificationMessage = payload["type"] ?? "";
-      if (notificationMessage.compareTo("booking") == 0) {
-        _onReceivedBookingOrder(payload);
-      }
-      else if (notificationMessage.compareTo("cancel") == 0) {
-        onBookingOrderCanceled("cancel");
+      switch(notificationMessage) {
+        case "clientFound": {
+          _onReceivedBookingOrder(payload);
+          break;
+        }
+        case "cancel": {
+          onBookingOrderCanceled("cancel");
+          break;
+        }
+        case "confirmAcceptation": {
+          _onAcceptationConfirmed();
+          break;
+        }
       }
     }
   }

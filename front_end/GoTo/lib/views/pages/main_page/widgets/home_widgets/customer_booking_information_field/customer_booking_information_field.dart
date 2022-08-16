@@ -143,7 +143,7 @@ class CustomerBookingInformationField extends StatelessWidget {
                 cubit.onAcceptBookingOrder();
                 break;
               case DriverBookingStatusEnums.clientPickedUp:
-                cubit.onFinishBookingOrder();
+                cubit.onFinishTrip();
                 break;
               default: break;
             }

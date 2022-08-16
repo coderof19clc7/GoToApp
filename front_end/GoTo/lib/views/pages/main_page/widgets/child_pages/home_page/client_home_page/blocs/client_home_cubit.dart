@@ -193,6 +193,7 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     ).set({
       "id": injector<UserInfo>().id,
       "phoneNumber": injector<UserInfo>().phone,
+      "time": DateTime.now().toString(),
       "startPoint": {
         "name": startPointName.contains(StringConstants.yourLocation)
             ? startPointName.split("${StringConstants.yourLocation}-")[1] : startPointName,

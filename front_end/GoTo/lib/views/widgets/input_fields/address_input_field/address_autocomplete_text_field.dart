@@ -11,13 +11,15 @@ import 'package:go_to/utilities/helpers/ui_helper.dart';
 
 class AddressAutocompleteTextField extends StatefulWidget {
   const AddressAutocompleteTextField({
-    Key? key,
+    Key? key, this.enableTextField = true, required this.textEditingController,
     this.suggestionApiFetching, this.onOptionSelected, this.onClearText
   }) : super(key: key);
 
   final FutureOr<Iterable<LocationInfo>> Function(String text)? suggestionApiFetching;
   final void Function(LocationInfo suggestedLocation)? onOptionSelected;
   final void Function()? onClearText;
+  final bool enableTextField;
+  final TextEditingController textEditingController;
 
   @override
   State<AddressAutocompleteTextField> createState() => _AddressAutocompleteTextFieldState();
@@ -26,7 +28,6 @@ class AddressAutocompleteTextField extends StatefulWidget {
 class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextField> {
   final debounceHelper = DebounceHelper();
   FocusNode focusNode = FocusNode();
-  TextEditingController textEditingController = TextEditingController();
   String previousText = "";
   List<LocationInfo> previousListSuggestion = [];
 
@@ -39,7 +40,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
 
   void onFocusNodeChanged() {
     setState(() {});
-    if (textEditingController.text.isEmpty == true && focusNode.hasFocus == false) {
+    if (widget.textEditingController.text.isEmpty == true && focusNode.hasFocus == false) {
       //clear marker
       widget.onClearText?.call();
     }
@@ -86,14 +87,17 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
   }
 
   void _onSuggestionSelected(LocationInfo suggestedLocation) {
-    textEditingController.text = suggestedLocation.name ?? "";
-    previousText = textEditingController.text;
+    widget.textEditingController.text = suggestedLocation.name ?? "";
+    setState(() {});
+    previousText = widget.textEditingController.text;
     widget.onOptionSelected?.call(suggestedLocation);
   }
 
   TextFieldConfiguration _buildTextFieldConfiguration() {
     return TextFieldConfiguration(
-      controller: textEditingController,
+      enabled: widget.enableTextField,
+      enableSuggestions: widget.enableTextField,
+      controller: widget.textEditingController,
       focusNode: focusNode,
       decoration: InputDecoration(
         constraints: BoxConstraints(
@@ -104,21 +108,24 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
           splashColor: ColorConstants.baseWhite,
           padding: const EdgeInsets.all(0),
           onPressed: () {
-            if (textEditingController.text.isNotEmpty == true) {
-              textEditingController.text = "";
-              setState(() {});
-              if (focusNode.hasFocus == false) {
-                //clear marker
-                widget.onClearText?.call();
+            if (widget.enableTextField) {
+              if (widget.textEditingController.text.isNotEmpty == true) {
+                widget.textEditingController.text = "";
+                setState(() {});
+                if (focusNode.hasFocus == false) {
+                  //clear marker
+                  widget.onClearText?.call();
+                }
+              }
+              else {
+                if (focusNode.hasFocus) {
+                  UIHelper.hideKeyboard(context);
+                }
               }
             }
-            else {
-              if (focusNode.hasFocus) {
-                UIHelper.hideKeyboard(context);
-              }
-            }
+            else {}
           },
-          color: (focusNode.hasFocus == true || textEditingController.text.isNotEmpty == true)
+          color: (focusNode.hasFocus == true || widget.textEditingController.text.isNotEmpty == true)
               ? ColorConstants.baseBlack
               : ColorConstants.grey,
           icon: const Icon(Icons.close_rounded,),
@@ -153,7 +160,7 @@ class _AddressAutocompleteTextFieldState extends State<AddressAutocompleteTextFi
   void dispose() {
     focusNode.removeListener(onFocusNodeChanged);
     focusNode.dispose();
-    textEditingController.dispose();
+    widget.textEditingController.dispose();
     super.dispose();
   }
 }

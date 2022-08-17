@@ -72,8 +72,8 @@ class _AuthTextFieldState extends State<AuthTextField> {
         case TextFieldTypeEnums.password:
           return "${StringConstants.password} ${StringConstants.mustInclude.toLowerCase()}";
         case TextFieldTypeEnums.confirmPassword:
-          return "${StringConstants.confirm + StringConstants.password.toLowerCase()} "
-              "${StringConstants.notMatchWith.toLowerCase() + StringConstants.password.toLowerCase()}";
+          return "${"${StringConstants.confirm} ${StringConstants.password.toLowerCase()}"} "
+              "${"${StringConstants.notMatchWith.toLowerCase()} ${StringConstants.password.toLowerCase()}"}";
         case TextFieldTypeEnums.normal:
           return "";
       }
@@ -118,7 +118,7 @@ class _AuthTextFieldState extends State<AuthTextField> {
           onTap: () => setState(() => _obscureText = !_obscureText),
           child: Container(
             margin: EdgeInsets.only(right: DimenConstants.getProportionalScreenWidth(context, 12)),
-            child: !_obscureText
+            child: _obscureText
                 ? Assets.svgs.eyeClose.svg(
               width: DimenConstants.getProportionalScreenWidth(context, 30),
               color: ColorConstants.baseGrey,

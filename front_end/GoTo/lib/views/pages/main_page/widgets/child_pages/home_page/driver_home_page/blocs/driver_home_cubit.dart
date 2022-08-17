@@ -1,6 +1,4 @@
-import 'dart:convert';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_to/configs/constants/enums/booking_status_enums.dart';
@@ -136,14 +134,15 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
           ? DriverBookingStatusEnums.clientCanceled
           : DriverBookingStatusEnums.rejected,
     ));
-    _clearCustomerBookingInformation();
+    clearBookingInformation();
 
     await databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
     ).set(injector<LocalStorageManager>().getString(LocalStorageKeys.deviceToken));
   }
 
-  void _clearCustomerBookingInformation() {
+  @override
+  void clearBookingInformation() {
     state.listMarker?.clear();
     state.listPolyline?.clear();
     emit(state.copyWith(
@@ -155,23 +154,19 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
   }
 
   @override
-  void onReceiveBookingNotification(RemoteMessage? remoteMessage) {
-    if (remoteMessage != null) {
-      final payload = Map<String, dynamic>.from(json.decode(remoteMessage.data["content"])["payload"]);
-      final notificationMessage = payload["type"] ?? "";
-      switch(notificationMessage) {
-        case "clientFound": {
-          _onReceivedBookingOrder(payload);
-          break;
-        }
-        case "cancel": {
-          onBookingOrderCanceled("cancel");
-          break;
-        }
-        case "confirmAcceptation": {
-          _onAcceptationConfirmed();
-          break;
-        }
+  void handleBaseOnPayloadAndType(Map<String, dynamic> payload, String type) {
+    switch(type) {
+      case "clientFound": {
+        _onReceivedBookingOrder(payload);
+        break;
+      }
+      case "cancel": {
+        onBookingOrderCanceled("cancel");
+        break;
+      }
+      case "confirmAcceptation": {
+        _onAcceptationConfirmed();
+        break;
       }
     }
   }

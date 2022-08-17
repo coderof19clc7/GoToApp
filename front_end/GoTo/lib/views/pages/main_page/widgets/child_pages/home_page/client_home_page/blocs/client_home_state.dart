@@ -10,7 +10,7 @@ class ClientHomeState extends HomeState {
   this.driverName, this.driverPhone,
  });
 
- final ClientBookingStatusEnums? clientBookingStatusEnums;
+ final ClientBookingStatusEnums clientBookingStatusEnums;
  final String? driverName;
  final String? driverPhone;
 

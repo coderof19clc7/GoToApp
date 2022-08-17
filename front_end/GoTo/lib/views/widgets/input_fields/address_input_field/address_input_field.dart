@@ -11,15 +11,21 @@ import 'package:go_to/views/widgets/input_fields/address_input_field/address_aut
 
 class AddressInputField extends StatefulWidget {
   const AddressInputField({
-    Key? key, this.startPointOnClearText, this.startPointOnOptionSelected,
-    this.startPointSuggestionApiFetching,
+    Key? key, this.enableInputField = true,
+    this.startPointOnClearText, this.startPointOnOptionSelected,
+    this.startPointSuggestionApiFetching, this.startTextEditingController,
     this.endPointOnClearText, this.endPointOnOptionSelected,
-    this.endPointSuggestionApiFetching,
+    this.endPointSuggestionApiFetching, this.endTextEditingController,
   }) : super(key: key);
 
+  final bool enableInputField;
+  //startPoint
+  final TextEditingController? startTextEditingController;
   final FutureOr<Iterable<LocationInfo>> Function(String text)? startPointSuggestionApiFetching;
   final void Function(LocationInfo suggestedLocation)? startPointOnOptionSelected;
   final void Function()? startPointOnClearText;
+  //endPoint
+  final TextEditingController? endTextEditingController;
   final FutureOr<Iterable<LocationInfo>> Function(String text)? endPointSuggestionApiFetching;
   final void Function(LocationInfo suggestedLocation)? endPointOnOptionSelected;
   final void Function()? endPointOnClearText;
@@ -36,17 +42,23 @@ class AddressInputFieldState extends State<AddressInputField> {
       builder: (contextHome, state) {
         return Column(
           children: [
+            //startPoint input field
             _buildChild(
-              context, suggestionApiFetching: widget.startPointSuggestionApiFetching,
+              context, textEditingController: widget.startTextEditingController,
+              suggestionApiFetching: widget.startPointSuggestionApiFetching,
               onOptionSelected: widget.startPointOnOptionSelected,
               onClearText: widget.startPointOnClearText,
               icon: const StartLocationIcon(),
             ),
-            SizedBox(
-              height: DimenConstants.getProportionalScreenHeight(context, 8),),
 
+            SizedBox(
+              height: DimenConstants.getProportionalScreenHeight(context, 8),
+            ),
+
+            //endPoint input field
             _buildChild(
-              context, suggestionApiFetching: widget.endPointSuggestionApiFetching,
+              context, textEditingController: widget.endTextEditingController,
+              suggestionApiFetching: widget.endPointSuggestionApiFetching,
               onOptionSelected: widget.endPointOnOptionSelected,
               onClearText: widget.endPointOnClearText,
               icon: const EndLocationIcon(),
@@ -58,7 +70,7 @@ class AddressInputFieldState extends State<AddressInputField> {
   }
 
   Widget _buildChild(BuildContext context, {
-    required Widget icon,
+    required Widget icon, TextEditingController? textEditingController,
     FutureOr<Iterable<LocationInfo>> Function(String text)? suggestionApiFetching,
     void Function(LocationInfo suggestedLocation)? onOptionSelected,
     void Function()? onClearText,
@@ -66,10 +78,11 @@ class AddressInputFieldState extends State<AddressInputField> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        //if user is client
         icon,
         SizedBox(width: DimenConstants.getProportionalScreenWidth(context, 8),),
         AddressAutocompleteTextField(
+          enableTextField: widget.enableInputField,
+          textEditingController: textEditingController ?? TextEditingController(),
           suggestionApiFetching: suggestionApiFetching,
           onOptionSelected: onOptionSelected,
           onClearText: onClearText,

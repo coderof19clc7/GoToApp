@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +30,16 @@ abstract class HomeCubit<State> extends Cubit<State> {
 
   @protected
   Future<void> drawPolylineRoute();
-  void onReceiveBookingNotification(RemoteMessage? remoteMessage);
+  @protected
+  void onReceiveBookingNotification(RemoteMessage? remoteMessage) {
+    if (remoteMessage != null) {
+      final payload = Map<String, dynamic>.from(json.decode(remoteMessage.data["content"])["payload"]);
+      handleBaseOnPayloadAndType(payload, payload["type"] ?? "");
+    }
+  }
+  @protected
+  void handleBaseOnPayloadAndType(Map<String, dynamic> payload, String type);
+  void clearBookingInformation();
 
   void showCancelToast(String message) {
     UIHelper.showErrorToast(message);

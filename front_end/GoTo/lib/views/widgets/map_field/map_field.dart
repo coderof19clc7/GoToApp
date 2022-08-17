@@ -36,6 +36,9 @@ class _MapFieldState extends State<MapField> {
       child: FlutterMap(
         mapController: widget.mapController,
         options: MapOptions(
+          plugins: [
+            const LocationMarkerPlugin(), // <-- add plugin here
+          ],
           center: LatLng(
             widget.initialCenterLat ?? appConfigs.centerLat,
             widget.initialCenterLng ?? appConfigs.centerLng,

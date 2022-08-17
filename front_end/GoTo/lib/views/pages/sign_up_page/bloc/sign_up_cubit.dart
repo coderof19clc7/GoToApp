@@ -19,9 +19,9 @@ class SignUpCubit extends AuthCubit<SignUpState> {
 
   void onSignUpSubmit(String phoneNumber, String name, String password, String confirmPassword) async {
     print("phone $phoneNumber");
-    print("password: $name");
-    print("phone $password");
-    print("password: $confirmPassword");
+    print("name: $name");
+    print("password $password");
+    print("confirm password: $confirmPassword");
 
     emit(state.copyWith(authEnum: AuthEnum.authenticating));
 
@@ -46,6 +46,7 @@ class SignUpCubit extends AuthCubit<SignUpState> {
       "phoneNumber": phoneNumber, "password": password, "accountType": "Customer",
       "name": name, "time": DateTime.now().toString(),
     });
+    print('OK');
     authListener = databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["registerStatus"]}",
     ).onValue.listen((event) async {

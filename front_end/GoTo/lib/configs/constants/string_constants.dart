@@ -23,6 +23,7 @@ class StringConstants {
   static const noResultFound = "Không tìm thấy kết quả tìm kiếm nào";
   static const booking = "Đặt xe";
   static const findingDriver = "Đang tìm tài xế...";
+  static const driverArrived = "Tài xế đã đến. Chúc các bạn thượng lộ bình an";
   static const cancel = "Hủy";
   static const startPoint = "Điểm đi";
   static const endPoint = "Điểm đến";

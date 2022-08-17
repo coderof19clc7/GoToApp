@@ -39,17 +39,18 @@ class SignInCubit extends AuthCubit<SignInState> {
 
     //if there is no input error
     await _doSignIn(phoneNumber, password);
-    // _doSignIn(phoneNumber, password);
   }
 
   Future<void> _doSignIn(String phoneNumber, String password) async {
     final deviceToken = await FirebaseMessaging.instance.getToken() ?? "";
+    print(deviceToken);
     await databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["login"]}",
     ).set({
       "phoneNumber": phoneNumber, "password": password,
       "time": DateTime.now().toString(), "deviceToken": deviceToken,
     });
+    print('OK');
     databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["loginStatus"]}",
     ).onValue.listen((event) async {

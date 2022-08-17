@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_to/configs/constants/enums/booking_status_enums.dart';
@@ -24,6 +22,8 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
   ClientHomeCubit() : super(state: const ClientHomeState());
 
   final networkManager = injector<NetworkManager>();
+  TextEditingController? startTextEditingController;
+  TextEditingController? endTextEditingController;
   List<Polyline> prePolylineList = [];
 
   FutureOr<Iterable<LocationInfo>> getSuggestedList(LocationEnums locationEnum, String inputText) async {
@@ -218,15 +218,43 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     }).then((value) => emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.showBookingInfo)));
   }
 
+  void _onDriverFound(Map<String, dynamic> payload) {
+    emit(state.copyWith(
+      driverName: payload["driverName"] ?? "",
+      driverPhone: payload["driverPhone"] ?? "",
+      clientBookingStatusEnums: ClientBookingStatusEnums.driverFound,
+    ));
+  }
+
   @override
-  void onReceiveBookingNotification(RemoteMessage? remoteMessage) {
-    if (remoteMessage != null) {
-      final payload = Map<String, dynamic>.from(json.decode(remoteMessage.data["content"])["payload"]);
-      emit(state.copyWith(
-        driverName: payload["driverName"] ?? "",
-        driverPhone: payload["driverPhone"] ?? "",
-        clientBookingStatusEnums: ClientBookingStatusEnums.driverFound,
-      ));
+  void clearBookingInformation() {
+    startTextEditingController?.text = "";
+    endTextEditingController?.text = "";
+    prePolylineList.clear();
+    state.listMarker?.clear();
+    state.listPolyline?.clear();
+    emit(state.copyWith(
+      listMarker: [], listPolyline: [],
+      clientBookingStatusEnums: ClientBookingStatusEnums.none,
+      distance: 0, timeEstimate: 0, driverName: "", driverPhone: "",
+    ));
+  }
+
+  @override
+  void handleBaseOnPayloadAndType(Map<String, dynamic> payload, String type) {
+    switch(type) {
+      case "driverFound": {
+        _onDriverFound(payload);
+        break;
+      }
+      case "driverArrived": {
+        emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.driverArrived));
+        break;
+      }
+      case "tripFinished": {
+        emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.finished));
+        break;
+      }
     }
   }
 }

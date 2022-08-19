@@ -50,7 +50,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
     emit(state.copyWith(
       customerID: payload["customerId"] ?? "",
       customerName: payload["customerName"] ?? "",
-      customerPhone: payload["phoneNumber"] ?? "",
+      customerPhone: payload["customerPhone"] ?? "",
       driverBookingStatusEnums: DriverBookingStatusEnums.clientFound,
     ));
   }
@@ -79,6 +79,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
       [startPointCoorString.longitude, startPointCoorString.latitude],
       [endPointCoorString.longitude, endPointCoorString.latitude]
     ];
+    print(coordinateList);
     final response = await ApiExecutor.callORSDirectionApi(coordinateList);
     print(response.toJson());
 
@@ -102,37 +103,60 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
   }
 
   Future<void> onAcceptBookingOrder() async {
-    await databaseRef.ref.child(
-      "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
-    ).set({
-      "driverID": userInfo.id,
-      "driverName": userInfo.name,
-      "driverPhone": userInfo.phone,
-    });
+    // await databaseRef.ref.child(
+    //   "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
+    // ).set({
+    //   "driverID": userInfo.id,
+    //   "driverName": userInfo.name,
+    //   "driverPhone": userInfo.phone,
+    // });
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.waitToConfirmAcceptation));
   }
 
   Future<void> _onAcceptationConfirmed() async {
-    await databaseRef.ref.child(
-      "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
-    ).remove();
+    // await databaseRef.ref.child(
+    //   "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+    // ).remove();
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.accepted));
   }
 
+  Future<void> onPickUpCustomer() async {
+    await databaseRef.ref.child(
+      "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
+    ).set({
+      "keyword": "waitForCustomer",
+    });
+    emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.clientPickedUp));
+  }
+
   Future<void> onFinishTrip() async {
-    emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.finished));
+    await databaseRef.ref.child(
+      "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+    ).set(injector<LocalStorageManager>().getString(LocalStorageKeys.deviceToken));
+    emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.none));
   }
 
   void onBookingOrderCanceled(String reason) async {
-    final cancelMessage = (reason.compareTo("cancel") == 0)
-        ? "${StringConstants.customer} ${StringConstants.had} "
-        "${StringConstants.cancel} ${StringConstants.booking}"
-        : "${StringConstants.you} ${StringConstants.had} ${StringConstants.reject}";
+    String cancelMessage = "${StringConstants.you} ${StringConstants.had.toLowerCase()} "
+        "${StringConstants.reject.toLowerCase()}";
+    switch(reason) {
+      case "clientCancel": {
+        cancelMessage = "${StringConstants.customer} ${StringConstants.had.toLowerCase()} "
+            "${StringConstants.cancel.toLowerCase()} ${StringConstants.booking.toLowerCase()}";
+        break;
+      }
+      case "tripNotAvailable": {
+        cancelMessage = StringConstants.notAvailable;
+        break;
+      }
+    }
     showCancelToast(cancelMessage);
     emit(state.copyWith(
-      driverBookingStatusEnums: (reason.compareTo("cancel") == 0)
-          ? DriverBookingStatusEnums.clientCanceled
-          : DriverBookingStatusEnums.rejected,
+      driverBookingStatusEnums: (reason.compareTo("clientCancel") == 0)
+          ? DriverBookingStatusEnums.clientCancel
+          : ((reason.compareTo("tripNotAvailable") == 0)
+          ? DriverBookingStatusEnums.tripNotAvailable
+          : DriverBookingStatusEnums.rejected),
     ));
     clearBookingInformation();
 
@@ -143,8 +167,6 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
 
   @override
   void clearBookingInformation() {
-    state.listMarker?.clear();
-    state.listPolyline?.clear();
     emit(state.copyWith(
       listMarker: [], listPolyline: [],
       driverBookingStatusEnums: DriverBookingStatusEnums.none,
@@ -160,8 +182,9 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
         _onReceivedBookingOrder(payload);
         break;
       }
-      case "cancel": {
-        onBookingOrderCanceled("cancel");
+      case "clientCancel":
+      case "tripNotAvailable": {
+        onBookingOrderCanceled(type);
         break;
       }
       case "confirmAcceptation": {

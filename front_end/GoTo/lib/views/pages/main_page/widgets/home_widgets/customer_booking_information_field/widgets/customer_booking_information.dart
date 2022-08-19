@@ -29,7 +29,7 @@ class CustomerBookingInformation extends StatelessWidget {
       return Text("$title: $content", softWrap: true,
         style: TextStyle(
           fontSize: DimenConstants.getProportionalScreenWidth(context, 17),
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
           color: ColorConstants.baseBlack,
         ),
       );
@@ -40,20 +40,20 @@ class CustomerBookingInformation extends StatelessWidget {
         SizedBox(height: DimenConstants.getProportionalScreenHeight(context, 20),),
         _buildInformationRow(
           "${StringConstants.customer} $customerName ($customerPhone) "
-              "${StringConstants.want} ${StringConstants.go}:",
+              "${StringConstants.want.toLowerCase()} ${StringConstants.go.toLowerCase()}",
           "",
         ),
-        SizedBox(height: DimenConstants.getProportionalScreenHeight(context, 15),),
+        SizedBox(height: DimenConstants.getProportionalScreenHeight(context, 10),),
         _buildInformationRow(
           StringConstants.from,
           "$startPoint (${StringConstants.need} ${distanceToCustomer}km - ${timeEstimateToCustomer}p "
-              "${StringConstants.from} ${StringConstants.you}",
+              "${StringConstants.from.toLowerCase()} ${StringConstants.you.toLowerCase()})",
         ),
-        SizedBox(height: DimenConstants.getProportionalScreenHeight(context, 15),),
+        SizedBox(height: DimenConstants.getProportionalScreenHeight(context, 10),),
         _buildInformationRow(
           StringConstants.arrive,
           "$endPoint (${StringConstants.need} ${distance}km - ${timeEstimate}p "
-              "${StringConstants.from} ${StringConstants.customer}",
+              "${StringConstants.from.toLowerCase()} ${StringConstants.customer.toLowerCase()})",
         ),
         SizedBox(height: DimenConstants.getProportionalScreenHeight(context, 20),),
       ],

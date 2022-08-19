@@ -73,7 +73,7 @@ class LocationManager {
       desiredAccuracy: LocationAccuracy.high,
     );
     currentPosition = position;
-    await updateLocationToFirebase();
+    // await updateLocationToFirebase();
 
     print('position longitude: ${position.longitude}');
     print('position latitude: ${position.latitude}');

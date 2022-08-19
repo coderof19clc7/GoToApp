@@ -17,7 +17,9 @@ import 'package:go_to/utilities/helpers/ui_helper.dart';
 part 'main_state.dart';
 
 class MainCubit extends Cubit<MainState> {
-  MainCubit() : super(const MainState());
+  MainCubit() : super(const MainState()) {
+    requestLocationPermission();
+  }
 
   final appConfig = injector<AppConfig>();
   final userInfo = injector<UserInfo>();
@@ -31,7 +33,7 @@ class MainCubit extends Cubit<MainState> {
   Future<void> requestLocationPermission() async {
     await LocationManager.requestPermissionLocation();
     if (injector<UserInfo>().type?.toLowerCase().compareTo("Customer".toLowerCase()) != 0) {
-      streamSubscriptionPosition = LocationManager.listenToCurrentLocationChanges();
+      // streamSubscriptionPosition = LocationManager.listenToCurrentLocationChanges();
     }
   }
 

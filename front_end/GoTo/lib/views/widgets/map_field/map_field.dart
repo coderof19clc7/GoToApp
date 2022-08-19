@@ -30,7 +30,7 @@ class _MapFieldState extends State<MapField> {
   @override
   Widget build(BuildContext context) {
     final appConfigs = injector<AppConfig>();
-    final currentLocationSize = DimenConstants.getProportionalScreenWidth(context, DimenConstants.baseIconSize);
+    final currentLocationSize = DimenConstants.getProportionalScreenWidth(context, 20);
     return SizedBox(
       height: DimenConstants.getScreenHeight(context) * 0.6,
       child: FlutterMap(
@@ -66,7 +66,7 @@ class _MapFieldState extends State<MapField> {
               markerSize: Size(currentLocationSize, currentLocationSize),
               showAccuracyCircle: false,
               headingSectorRadius: 30,
-              headingSectorColor: ColorConstants.lightOrange,
+              headingSectorColor: ColorConstants.baseOrangeAcent,
             ),
           ],
         ],

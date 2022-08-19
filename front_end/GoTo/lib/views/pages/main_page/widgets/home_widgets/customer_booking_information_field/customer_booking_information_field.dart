@@ -29,7 +29,7 @@ class CustomerBookingInformationField extends StatelessWidget {
           child: Column(
             children: [
               Container(
-                width: DimenConstants.baseWidth,
+                width: DimenConstants.getScreenWidth(context),
                 constraints: BoxConstraints(
                   minHeight: DimenConstants.getProportionalScreenHeight(context, 200),
                 ),
@@ -55,7 +55,11 @@ class CustomerBookingInformationField extends StatelessWidget {
                   || state.driverBookingStatusEnums == DriverBookingStatusEnums.clientPickedUp
               )...[
                 _buildButton(context, contextHome.read<DriverHomeCubit>(), state),
-              ]
+              ],
+
+              if (state.driverBookingStatusEnums == DriverBookingStatusEnums.waitToConfirmAcceptation) ...[
+                const CircularProgressIndicator(),
+              ],
             ],
           ),
         );
@@ -67,8 +71,8 @@ class CustomerBookingInformationField extends StatelessWidget {
     switch(state.driverBookingStatusEnums) {
       case DriverBookingStatusEnums.clientFound:
       case DriverBookingStatusEnums.accepted:
+      case DriverBookingStatusEnums.waitToConfirmAcceptation:
       case DriverBookingStatusEnums.clientPickedUp:
-      case DriverBookingStatusEnums.finished:
         return CustomerBookingInformation(
           customerName: state.customerName ?? "",
           customerPhone: state.customerPhone ?? "",
@@ -77,7 +81,7 @@ class CustomerBookingInformationField extends StatelessWidget {
           timeEstimate: state.timeEstimate.toString(),
           distance: state.distance.toString(),
           timeEstimateToCustomer: state.timeEstimateToCustomer.toString(),
-          distanceToCustomer: state.driverBookingStatusEnums.toString(),
+          distanceToCustomer: state.distanceToCustomer.toString(),
         );
       default: return const SizedBox();
     }
@@ -88,7 +92,8 @@ class CustomerBookingInformationField extends StatelessWidget {
     late String mainBtnText;
     switch(state.driverBookingStatusEnums) {
       case DriverBookingStatusEnums.accepted:{
-        mainBtnText = "${StringConstants.had} ${StringConstants.pickUp} ${StringConstants.customer}";
+        mainBtnText = "${StringConstants.had} ${StringConstants.pickUp.toLowerCase()} "
+            "${StringConstants.customer.toLowerCase()}";
         break;
       }
       case DriverBookingStatusEnums.clientFound: {
@@ -96,7 +101,8 @@ class CustomerBookingInformationField extends StatelessWidget {
         break;
       }
       case DriverBookingStatusEnums.clientPickedUp: {
-        mainBtnText = "${StringConstants.had} ${StringConstants.arrive} ${StringConstants.endPoint}";
+        mainBtnText = "${StringConstants.had} ${StringConstants.arrive.toLowerCase()} "
+            "${StringConstants.endPoint.toLowerCase()}";
         break;
       }
       default: {
@@ -107,53 +113,55 @@ class CustomerBookingInformationField extends StatelessWidget {
     return Row(
       children: [
         if (hasTwoBtn) ...[
-          RoundedRectangleInkWellButton(
-            width: DimenConstants.getScreenWidth(context) * 0.4,
-            height: DimenConstants.getProportionalScreenHeight(context, 60),
-            paddingVertical: DimenConstants.getProportionalScreenHeight(context, 10),
-            bgColor: ColorConstants.baseGrey,
-            onTap: () {
-              cubit.onBookingOrderCanceled("reject");
-            },
-            child: Text(
-              StringConstants.reject,
-              style: TextStyle(
-                color: ColorConstants.baseBlack,
-                fontSize: DimenConstants.getProportionalScreenWidth(context, 20),
-                fontWeight: FontWeight.w500,
+          Expanded(
+            flex: 2,
+            child: RoundedRectangleInkWellButton(
+              height: DimenConstants.getProportionalScreenHeight(context, 60),
+              paddingVertical: DimenConstants.getProportionalScreenHeight(context, 10),
+              bgColor: ColorConstants.baseGrey,
+              onTap: () {
+                cubit.onBookingOrderCanceled("reject");
+              },
+              child: Text(
+                StringConstants.reject,
+                style: TextStyle(
+                  color: ColorConstants.baseBlack,
+                  fontSize: DimenConstants.getProportionalScreenWidth(context, 20),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
-          SizedBox(width: DimenConstants.getScreenWidth(context) * 0.2,),
+          const Expanded(child: SizedBox()),
         ],
 
-        RoundedRectangleInkWellButton(
-          width: hasTwoBtn
-              ? DimenConstants.getScreenWidth(context) * 0.4
-              : DimenConstants.getScreenWidth(context),
-          height: DimenConstants.getProportionalScreenHeight(context, 60),
-          paddingVertical: DimenConstants.getProportionalScreenHeight(context, 10),
-          bgLinearGradient: LinearGradient(colors: ColorConstants.defaultOrangeList),
-          onTap: () {
-            switch(state.driverBookingStatusEnums) {
-              case DriverBookingStatusEnums.accepted:
-                print('user picked up or arrived end point');
-                break;
-              case DriverBookingStatusEnums.clientFound:
-                cubit.onAcceptBookingOrder();
-                break;
-              case DriverBookingStatusEnums.clientPickedUp:
-                cubit.onFinishTrip();
-                break;
-              default: break;
-            }
-          },
-          child: Text(
-            mainBtnText,
-            style: TextStyle(
-              color: ColorConstants.baseWhite,
-              fontSize: DimenConstants.getProportionalScreenWidth(context, hasTwoBtn ? 20 : 25),
-              fontWeight: FontWeight.w600,
+        Expanded(
+          flex: 2,
+          child: RoundedRectangleInkWellButton(
+            height: DimenConstants.getProportionalScreenHeight(context, 60),
+            paddingVertical: DimenConstants.getProportionalScreenHeight(context, 10),
+            bgLinearGradient: LinearGradient(colors: ColorConstants.defaultOrangeList),
+            onTap: () {
+              switch(state.driverBookingStatusEnums) {
+                case DriverBookingStatusEnums.accepted:
+                  cubit.onPickUpCustomer();
+                  break;
+                case DriverBookingStatusEnums.clientFound:
+                  cubit.onAcceptBookingOrder();
+                  break;
+                case DriverBookingStatusEnums.clientPickedUp:
+                  cubit.onFinishTrip();
+                  break;
+                default: break;
+              }
+            },
+            child: Text(
+              mainBtnText,
+              style: TextStyle(
+                color: ColorConstants.baseWhite,
+                fontSize: DimenConstants.getProportionalScreenWidth(context, hasTwoBtn ? 20 : 25),
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),

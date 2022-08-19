@@ -38,8 +38,10 @@ class AppConfig{
 
     //initial route
     final accessToken = injector<LocalStorageManager>().getString(LocalStorageKeys.accessToken);
-    if (accessToken?.isNotEmpty == true) {
-      initialRoute = RouteConstants.mainRoute;
+    if (accessToken != null) {
+      if (accessToken.isNotEmpty) {
+        initialRoute = RouteConstants.mainRoute;
+      }
     } else {
       initialRoute = RouteConstants.signInRoute;
       // initialRoute = RouteConstants.mainRoute;

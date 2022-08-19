@@ -30,7 +30,7 @@ Future<void> initializeDependencies() async {
   // FirebaseCrashlytics.instance.crash();
   
   //get realtime database reference
-  injector.registerSingleton(RealtimeDatabaseService.instance);
+  injector.registerSingleton<RealtimeDatabaseService>(RealtimeDatabaseService.instance);
 
   //start fcm service
   // await FcmService.instance.startService();

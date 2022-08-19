@@ -45,9 +45,10 @@ class AppPageRoute extends PageRouteBuilder {
       case RouteConstants.signUpRoute: {
         return buildPageRoute(child: const SignUpPage());
       }
-      default: {
+      case RouteConstants.mainRoute: {
         return buildPageRoute(child: const MainPage());
       }
+      default: return null;
     }
   }
 }

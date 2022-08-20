@@ -67,6 +67,7 @@ class _MapFieldState extends State<MapField> {
               showAccuracyCircle: false,
               headingSectorRadius: 30,
               headingSectorColor: ColorConstants.baseOrangeAcent,
+              moveAnimationDuration: const Duration(milliseconds: 100),
             ),
           ],
         ],

@@ -6,8 +6,10 @@
         </trust-anchors>
     </base-config>
     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">firebaseio.com</domain>
+        <domain includeSubdomains="true">gotoapp-357309-default-rtdb.firebaseio.com</domain>
+        <domain includeSubdomains="true">firebasedatabase.app</domain>
         <domain includeSubdomains="true">gotoapp-357309.firebaseapp.com</domain>
-        <domain includeSubdomains="true">gotoapp-357309.appspot.com</domain>
         <domain includeSubdomains="true">gotoapp-357309-default-rtdb.asia-southeast1.firebasedatabase.app</domain>
     </domain-config>
 </network-security-config>

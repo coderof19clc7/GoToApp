@@ -7,6 +7,7 @@ class UserInfo {
   }
 
   void setData([String? id, String? phone, String? name, String? type]) {
+    instance?.id = id;
     instance?.phone = phone;
     instance?.name = name;
     instance?.type = type;

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:go_to/configs/app_configs.dart';
 import 'package:go_to/configs/constants/enums/booking_status_enums.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
 import 'package:go_to/configs/constants/keys/map_keys.dart';
@@ -58,6 +59,22 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     return suggestedLocationList;
   }
 
+  @override
+  void moveMapView(List<Marker> markerList) {
+    if (markerList.isNotEmpty) {
+      final length = markerList.length;
+      double averageLat = 0, averageLng = 0;
+      final zoom = length == 1 ? injector<AppConfig>().mapMaxZoom - 2 : injector<AppConfig>().mapMinZoom;
+      for (var marker in markerList) {
+        averageLat += marker.point.latitude;
+        averageLng += marker.point.longitude;
+      }
+      averageLat /= length;
+      averageLng /= length;
+      mapController?.move(LatLng(averageLat, averageLng), zoom);
+    }
+  }
+
   Future<void> addMarker(LocationInfo selectedSuggestedLocation) async {
     if (selectedSuggestedLocation.name?.toLowerCase()
         .compareTo(StringConstants.yourLocation.toLowerCase()) == 0) {
@@ -112,6 +129,8 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     print('map: ${tempSuggestedMap.length}');
     print('list: ${tempMarkerList.length}');
 
+    moveMapView(tempMarkerList);
+
     if (tempMarkerList.length >= 2) {
       if (willDrawPolyline) {
         prePolylineList.clear();
@@ -153,6 +172,8 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
       listMarker: tempMarkerList, mapChosenSuggested: tempSuggestedMap,
       listPolyline: tempPolylineList, clientBookingStatusEnums: ClientBookingStatusEnums.none,
     ));
+
+    moveMapView(tempMarkerList);
   }
 
   @override
@@ -215,6 +236,7 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     ).set({
       "customerId": injector<UserInfo>().id,
       "keyword": "cancel",
+      "time": DateTime.now().toString(),
     }).then((value) => emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.showBookingInfo)));
   }
 
@@ -248,11 +270,15 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
         break;
       }
       case "driverArrived": {
-        emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.driverArrived));
+        if (state.clientBookingStatusEnums == ClientBookingStatusEnums.driverFound) {
+          emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.driverArrived));
+        }
         break;
       }
       case "tripFinished": {
-        emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.finished));
+        if (state.clientBookingStatusEnums == ClientBookingStatusEnums.driverArrived) {
+          emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.finished));
+        }
         break;
       }
     }

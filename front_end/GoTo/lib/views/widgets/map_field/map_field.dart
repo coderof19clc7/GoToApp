@@ -12,7 +12,6 @@ class MapField extends StatefulWidget {
   const MapField({
     Key? key, this.listMarker = const [], this.listPolyline = const [],
     this.mapController, this.initialCenterLat, this.initialCenterLng,
-    this.initialZoom = 14.0, this.maxZoom = 17.0,
   }) : super(key: key);
 
   final List<Marker> listMarker;
@@ -20,8 +19,6 @@ class MapField extends StatefulWidget {
   final MapController? mapController;
   final double? initialCenterLat;
   final double? initialCenterLng;
-  final double initialZoom, maxZoom;
-
   @override
   State<MapField> createState() => _MapFieldState();
 }
@@ -44,7 +41,7 @@ class _MapFieldState extends State<MapField> {
             widget.initialCenterLng ?? appConfigs.centerLng,
           ),
           controller: widget.mapController,
-          zoom: widget.initialZoom, maxZoom: widget.maxZoom,
+          zoom: appConfigs.mapMinZoom, maxZoom: appConfigs.mapMaxZoom,
         ),
         layers: [
           TileLayerOptions(

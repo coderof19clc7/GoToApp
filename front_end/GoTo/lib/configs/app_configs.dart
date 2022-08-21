@@ -15,6 +15,7 @@ class AppConfig{
   double centerLat = 0, centerLng = 0;
   bool debugTag = false;
   int cacheDuration = 100;
+  double mapMinZoom = 14.0, mapMaxZoom = 18.3;
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
   AppConfig._init();
@@ -38,6 +39,7 @@ class AppConfig{
 
     //initial route
     final accessToken = injector<LocalStorageManager>().getString(LocalStorageKeys.accessToken);
+    await injector<LocalStorageManager>().setString(LocalStorageKeys.accountType, "Customer");
     if (accessToken != null) {
       if (accessToken.isNotEmpty) {
         initialRoute = RouteConstants.mainRoute;

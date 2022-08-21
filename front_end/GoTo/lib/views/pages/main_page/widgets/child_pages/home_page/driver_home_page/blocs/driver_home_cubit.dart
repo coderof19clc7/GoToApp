@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:go_to/configs/app_configs.dart';
 import 'package:go_to/configs/constants/enums/booking_status_enums.dart';
 import 'package:go_to/configs/constants/enums/location_enums.dart';
 import 'package:go_to/configs/constants/keys/map_keys.dart';
@@ -55,6 +56,21 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
     ));
   }
 
+  @override
+  void moveMapView(List<Marker> markerList) {
+    final length = markerList.length + 1;
+    double averageLat = LocationManager.currentPosition?.latitude ?? 0;
+    double averageLng = LocationManager.currentPosition?.longitude ?? 0;
+    final zoom = length == 1 ? injector<AppConfig>().mapMaxZoom - 2 : injector<AppConfig>().mapMinZoom;
+    for (var marker in markerList) {
+      averageLat += marker.point.latitude;
+      averageLng += marker.point.longitude;
+    }
+    averageLat /= length;
+    averageLng /= length;
+    mapController?.move(LatLng(averageLat, averageLng), zoom);
+  }
+
   void _addMarker(LocationInfo startPoint, LocationInfo endPoint) {
     final tempMapChosenSuggested = {
       MapKeys.startPoint: startPoint,
@@ -68,6 +84,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
       mapChosenSuggested: tempMapChosenSuggested,
       listMarker: tempMarkerList,
     ));
+    moveMapView(tempMarkerList);
   }
 
   @override
@@ -102,21 +119,34 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
     }
   }
 
+  Future<void> _turnOnAvailable(bool available) async {
+    if (available) {
+      await databaseRef.ref.child(
+        "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+      ).set(injector<LocalStorageManager>().getString(LocalStorageKeys.deviceToken));
+    }
+    else {
+      await databaseRef.ref.child(
+        "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+      ).remove();
+    }
+  }
+
   Future<void> onAcceptBookingOrder() async {
-    // await databaseRef.ref.child(
-    //   "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
-    // ).set({
-    //   "driverID": userInfo.id,
-    //   "driverName": userInfo.name,
-    //   "driverPhone": userInfo.phone,
-    // });
+    await databaseRef.ref.child(
+      "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
+    ).set({
+      "keyword": "acceptTrip",
+      "driverID": userInfo.id,
+      "driverName": userInfo.name,
+      "driverPhone": userInfo.phone,
+      "time": DateTime.now().toString(),
+    });
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.waitToConfirmAcceptation));
   }
 
   Future<void> _onAcceptationConfirmed() async {
-    // await databaseRef.ref.child(
-    //   "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
-    // ).remove();
+    await _turnOnAvailable(false);
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.accepted));
   }
 
@@ -124,15 +154,18 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
     await databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
     ).set({
-      "keyword": "waitForCustomer",
+      "keyword": "pickedUp",
     });
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.clientPickedUp));
   }
 
   Future<void> onFinishTrip() async {
     await databaseRef.ref.child(
-      "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
-    ).set(injector<LocalStorageManager>().getString(LocalStorageKeys.deviceToken));
+      "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
+    ).set({
+      "keyword": "finished",
+    });
+    await _turnOnAvailable(true);
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.none));
   }
 
@@ -143,6 +176,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
       case "clientCancel": {
         cancelMessage = "${StringConstants.customer} ${StringConstants.had.toLowerCase()} "
             "${StringConstants.cancel.toLowerCase()} ${StringConstants.booking.toLowerCase()}";
+        await _turnOnAvailable(true);
         break;
       }
       case "tripNotAvailable": {
@@ -159,10 +193,6 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
           : DriverBookingStatusEnums.rejected),
     ));
     clearBookingInformation();
-
-    await databaseRef.ref.child(
-      "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
-    ).set(injector<LocalStorageManager>().getString(LocalStorageKeys.deviceToken));
   }
 
   @override
@@ -173,6 +203,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
       distance: 0, timeEstimate: 0, customerName: "", customerPhone: "",
       distanceToCustomer: 0, timeEstimateToCustomer: 0,
     ));
+    moveMapView([]);
   }
 
   @override

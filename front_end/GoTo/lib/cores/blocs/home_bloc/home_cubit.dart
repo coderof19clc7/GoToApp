@@ -29,6 +29,8 @@ abstract class HomeCubit<State> extends Cubit<State> {
   MapController? mapController;
 
   @protected
+  void moveMapView(List<Marker> markerList);
+  @protected
   Future<void> drawPolylineRoute();
   @protected
   void onReceiveBookingNotification(RemoteMessage? remoteMessage) {

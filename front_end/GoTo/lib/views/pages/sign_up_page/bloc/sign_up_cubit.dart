@@ -47,7 +47,6 @@ class SignUpCubit extends AuthCubit<SignUpState> {
       "phoneNumber": phoneNumber, "password": password, "accountType": "Customer",
       "name": name, "time": UIHelper.getTimeStamp(),
     });
-    print('OK');
     authListener = databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["registerStatus"]}",
     ).onValue.listen((event) async {

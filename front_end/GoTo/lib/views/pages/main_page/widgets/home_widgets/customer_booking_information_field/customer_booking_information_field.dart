@@ -114,7 +114,7 @@ class CustomerBookingInformationField extends StatelessWidget {
       children: [
         if (hasTwoBtn) ...[
           Expanded(
-            flex: 2,
+            flex: 5,
             child: RoundedRectangleInkWellButton(
               height: DimenConstants.getProportionalScreenHeight(context, 60),
               paddingVertical: DimenConstants.getProportionalScreenHeight(context, 10),
@@ -136,7 +136,7 @@ class CustomerBookingInformationField extends StatelessWidget {
         ],
 
         Expanded(
-          flex: 2,
+          flex: 5,
           child: RoundedRectangleInkWellButton(
             height: DimenConstants.getProportionalScreenHeight(context, 60),
             paddingVertical: DimenConstants.getProportionalScreenHeight(context, 10),

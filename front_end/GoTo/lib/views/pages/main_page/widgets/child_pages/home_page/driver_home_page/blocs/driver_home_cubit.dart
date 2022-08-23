@@ -40,7 +40,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
       LocationInfo(
         name:  endPoint["name"],
         coordinates: LatLng(endPoint["lat"], endPoint["lng"]),
-        locationEnum: LocationEnums.startPoint,
+        locationEnum: LocationEnums.endPoint,
       ),
     );
 
@@ -134,8 +134,9 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
 
   Future<void> onAcceptBookingOrder() async {
     await databaseRef.ref.child(
-      "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
+      "${FirebaseConstants.databaseChildPath["bookingResponse"]}",
     ).set({
+      "customerId": state.customerID,
       "keyword": "acceptTrip",
       "driverID": userInfo.id,
       "driverName": userInfo.name,
@@ -152,18 +153,22 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
 
   Future<void> onPickUpCustomer() async {
     await databaseRef.ref.child(
-      "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
+      "${FirebaseConstants.databaseChildPath["bookingResponse"]}",
     ).set({
+      "customerId": state.customerID,
       "keyword": "pickedUp",
+      "time": UIHelper.getTimeStamp(),
     });
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.clientPickedUp));
   }
 
   Future<void> onFinishTrip() async {
     await databaseRef.ref.child(
-      "${FirebaseConstants.databaseChildPath["bookingResponse"]}/${state.customerID}",
+      "${FirebaseConstants.databaseChildPath["bookingResponse"]}",
     ).set({
+      "customerId": state.customerID,
       "keyword": "finished",
+      "time": UIHelper.getTimeStamp(),
     });
     await _turnOnAvailable(true);
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.none));

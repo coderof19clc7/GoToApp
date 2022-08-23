@@ -212,7 +212,7 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     await injector<RealtimeDatabaseService>().ref.child(
       "${FirebaseConstants.databaseChildPath["booking"]}"
     ).set({
-      "id": injector<UserInfo>().id,
+      "customerId": injector<UserInfo>().id,
       "phoneNumber": injector<UserInfo>().phone,
       "time": UIHelper.getTimeStamp(),
       "startPoint": {

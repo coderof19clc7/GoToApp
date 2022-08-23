@@ -31,9 +31,9 @@ class UIHelper {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
   }
 
-  static double getTimeStamp({DateTime? dateTime}) {
+  static int getTimeStamp({DateTime? dateTime}) {
     dateTime ??= DateTime.now();
-    return dateTime.millisecondsSinceEpoch.toDouble();
+    return dateTime.millisecondsSinceEpoch;
   }
 
   static void _showToast(

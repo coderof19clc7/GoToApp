@@ -67,10 +67,10 @@ class MainPage extends StatelessWidget {
   void _loadUserDataFromLocalStorage() {
     final localStorageManager = injector<LocalStorageManager>();
     injector<UserInfo>().setData(
-      localStorageManager.getString(LocalStorageKeys.userID),
-      localStorageManager.getString(LocalStorageKeys.phoneNumber),
-      localStorageManager.getString(LocalStorageKeys.name),
-      localStorageManager.getString(LocalStorageKeys.accountType),
+      localStorageManager.getString(LocalStorageKeys.userID) ?? "ABCzyx",
+      localStorageManager.getString(LocalStorageKeys.phoneNumber) ?? "123123123123",
+      localStorageManager.getString(LocalStorageKeys.name) ?? "ABC",
+      localStorageManager.getString(LocalStorageKeys.accountType) ?? "Customer",
     );
   }
 }

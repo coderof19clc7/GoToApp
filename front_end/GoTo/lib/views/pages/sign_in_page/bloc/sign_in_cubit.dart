@@ -50,7 +50,6 @@ class SignInCubit extends AuthCubit<SignInState> {
       "phoneNumber": phoneNumber, "password": password,
       "time": UIHelper.getTimeStamp(), "deviceToken": deviceToken,
     });
-    print('OK');
     databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["loginStatus"]}",
     ).onValue.listen((event) async {

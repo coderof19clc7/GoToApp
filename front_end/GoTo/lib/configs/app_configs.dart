@@ -39,7 +39,6 @@ class AppConfig{
 
     //initial route
     final accessToken = injector<LocalStorageManager>().getString(LocalStorageKeys.accessToken);
-    await injector<LocalStorageManager>().setString(LocalStorageKeys.accountType, "Customer");
     if (accessToken != null) {
       if (accessToken.isNotEmpty) {
         initialRoute = RouteConstants.mainRoute;

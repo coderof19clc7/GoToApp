@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_to/configs/constants/enums/auth_enums.dart';
@@ -80,7 +82,10 @@ class SignInCubit extends AuthCubit<SignInState> {
     }
     emit(state.copyWith(authEnum: AuthEnum.signInSucceeded));
     showAuthenticateResultToast();
-    Navigator.pushReplacementNamed(context!, RouteConstants.mainRoute);
+    Timer(
+      const Duration(seconds: 3),
+      () => Navigator.pushReplacementNamed(context!, RouteConstants.mainRoute),
+    );
   }
 
   Future<void> _saveUserDataToLocalStorage(String id, String phone, String name, String type,

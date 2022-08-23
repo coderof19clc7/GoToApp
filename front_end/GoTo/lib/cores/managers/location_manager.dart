@@ -11,10 +11,10 @@ import 'package:latlong2/latlong.dart';
 class LocationManager {
   static LocationManager? _instance;
   static Position? currentPosition;
+  static Position? _preCurrentLocation;
   static Timer? updateFirebaseDebounce;
   static int updateFirebaseDuration = 1;
   static int updateFirebaseMaxDifferentDistance = 100;
-  static int differentDistance = 0, bounceDifferentDistance = 10;
   static int distanceFilter = 100;
 
 
@@ -73,6 +73,7 @@ class LocationManager {
       desiredAccuracy: LocationAccuracy.high,
     );
     currentPosition = position;
+    _preCurrentLocation = position;
     // await updateLocationToFirebase();
 
     print('position longitude: ${position.longitude}');
@@ -84,6 +85,7 @@ class LocationManager {
     return LocationSettings(
       accuracy: LocationAccuracy.high,
       distanceFilter: distanceFilter,
+      timeLimit: const Duration(seconds: 5),
     );
   }
 
@@ -95,15 +97,17 @@ class LocationManager {
       if (position != currentPosition) {
         updateFirebaseDebounce?.cancel();
         currentPosition = position;
-        if (differentDistance % updateFirebaseMaxDifferentDistance == 0) {
+        double currentDistanceChange = Geolocator.distanceBetween(
+          currentPosition?.latitude ?? 0, currentPosition?.longitude ?? 0,
+          _preCurrentLocation?.latitude ?? 0, _preCurrentLocation?.longitude ?? 0,
+        );
+        if (currentDistanceChange >= updateFirebaseMaxDifferentDistance) {
+          _preCurrentLocation = currentPosition;
           updateLocationToFirebase();
-          differentDistance = 0;
         }
         else {
-          differentDistance += bounceDifferentDistance;
           updateFirebaseDebounce =
               Timer(Duration(minutes: updateFirebaseDuration), () {
-            differentDistance = 0;
             updateLocationToFirebase();
           });
         }

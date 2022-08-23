@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_to/configs/constants/enums/auth_enums.dart';
 import 'package:go_to/configs/constants/network_constants/firebase_constants.dart';
@@ -67,6 +69,8 @@ class SignUpCubit extends AuthCubit<SignUpState> {
   void _onSignUpSucceeded() {
     emit(state.copyWith(authEnum: AuthEnum.signUpSucceeded));
     showAuthenticateResultToast();
-    Navigator.pop(context!);
+    Timer(
+      const Duration(seconds: 3), () => Navigator.pop(context!),
+    );
   }
 }

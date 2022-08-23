@@ -43,7 +43,7 @@ class MainCubit extends Cubit<MainState> {
     ).set({
       "id": injector<UserInfo>().id,
       "phoneNumber": phoneNumber,
-      "time": DateTime.now().toString(),
+      "time": UIHelper.getTimeStamp(),
     });
 
     logoutListener = injector<RealtimeDatabaseService>().ref.child(

@@ -9,6 +9,7 @@ import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/blocs/auth_bloc/auth_cubit.dart';
 import 'package:go_to/cores/managers/local_storage_manager.dart';
+import 'package:go_to/utilities/helpers/ui_helper.dart';
 
 part 'sign_in_state.dart';
 
@@ -47,7 +48,7 @@ class SignInCubit extends AuthCubit<SignInState> {
       "${FirebaseConstants.databaseChildPath["login"]}",
     ).set({
       "phoneNumber": phoneNumber, "password": password,
-      "time": DateTime.now().toString(), "deviceToken": deviceToken,
+      "time": UIHelper.getTimeStamp(), "deviceToken": deviceToken,
     });
     print('OK');
     databaseRef.ref.child(

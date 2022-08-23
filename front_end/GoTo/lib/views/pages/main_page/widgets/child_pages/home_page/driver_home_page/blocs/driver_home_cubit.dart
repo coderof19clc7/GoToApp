@@ -140,7 +140,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
       "driverID": userInfo.id,
       "driverName": userInfo.name,
       "driverPhone": userInfo.phone,
-      "time": DateTime.now().toString(),
+      "time": UIHelper.getTimeStamp(),
     });
     emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.waitToConfirmAcceptation));
   }

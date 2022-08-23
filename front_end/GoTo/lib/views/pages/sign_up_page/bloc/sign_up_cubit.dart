@@ -5,6 +5,7 @@ import 'package:go_to/configs/constants/string_constants.dart';
 import 'package:go_to/configs/firebase_configs/realtime_database_service.dart';
 import 'package:go_to/configs/injection.dart';
 import 'package:go_to/cores/blocs/auth_bloc/auth_cubit.dart';
+import 'package:go_to/utilities/helpers/ui_helper.dart';
 
 part 'sign_up_state.dart';
 
@@ -44,7 +45,7 @@ class SignUpCubit extends AuthCubit<SignUpState> {
       "${FirebaseConstants.databaseChildPath["register"]}",
     ).set({
       "phoneNumber": phoneNumber, "password": password, "accountType": "Customer",
-      "name": name, "time": DateTime.now().toString(),
+      "name": name, "time": UIHelper.getTimeStamp(),
     });
     print('OK');
     authListener = databaseRef.ref.child(

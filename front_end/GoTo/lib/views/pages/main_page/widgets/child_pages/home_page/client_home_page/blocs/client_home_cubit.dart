@@ -214,7 +214,7 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     ).set({
       "id": injector<UserInfo>().id,
       "phoneNumber": injector<UserInfo>().phone,
-      "time": DateTime.now().toString(),
+      "time": UIHelper.getTimeStamp(),
       "startPoint": {
         "name": startPointName.contains(StringConstants.yourLocation)
             ? startPointName.split("${StringConstants.yourLocation}-")[1] : startPointName,
@@ -236,7 +236,7 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     ).set({
       "customerId": injector<UserInfo>().id,
       "keyword": "cancel",
-      "time": DateTime.now().toString(),
+      "time": UIHelper.getTimeStamp(),
     }).then((value) => emit(state.copyWith(clientBookingStatusEnums: ClientBookingStatusEnums.showBookingInfo)));
   }
 

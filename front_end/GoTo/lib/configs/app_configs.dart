@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,7 +12,7 @@ const String envPath = ".env";
 
 class AppConfig{
   String? baseUrl, initialRoute;
-  String appName = "", openStreetMapUrl = "";
+  String appName = "", openStreetMapUrl = "", deviceToken = "";
   double centerLat = 0, centerLng = 0;
   bool debugTag = false;
   int cacheDuration = 100;
@@ -36,6 +37,8 @@ class AppConfig{
         print(e);
       }
     }
+
+    deviceToken = await FirebaseMessaging.instance.getToken() ?? "";
 
     //initial route
     final accessToken = injector<LocalStorageManager>().getString(LocalStorageKeys.accessToken);

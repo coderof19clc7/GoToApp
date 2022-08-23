@@ -1,5 +1,7 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_to/configs/app_configs.dart';
 import 'package:go_to/configs/constants/color_constants.dart';
 import 'package:go_to/configs/constants/keys/storage_keys.dart';
 import 'package:go_to/configs/injection.dart';
@@ -72,5 +74,6 @@ class MainPage extends StatelessWidget {
       localStorageManager.getString(LocalStorageKeys.name) ?? "ABC",
       localStorageManager.getString(LocalStorageKeys.accountType) ?? "Customer",
     );
+    print(injector<AppConfig>().deviceToken);
   }
 }

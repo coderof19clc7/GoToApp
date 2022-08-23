@@ -51,7 +51,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
     emit(state.copyWith(
       customerID: payload["customerId"] ?? "",
       customerName: payload["customerName"] ?? "",
-      customerPhone: payload["customerPhone"] ?? "",
+      customerPhone: payload["phoneNumber"] ?? "",
       driverBookingStatusEnums: DriverBookingStatusEnums.clientFound,
     ));
   }
@@ -123,7 +123,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
     if (available) {
       await databaseRef.ref.child(
         "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
-      ).set(injector<LocalStorageManager>().getString(LocalStorageKeys.deviceToken));
+      ).set(injector<AppConfig>().deviceToken);
     }
     else {
       await databaseRef.ref.child(
@@ -171,7 +171,7 @@ class DriverHomeCubit extends HomeCubit<DriverHomeState> {
       "time": UIHelper.getTimeStamp(),
     });
     await _turnOnAvailable(true);
-    emit(state.copyWith(driverBookingStatusEnums: DriverBookingStatusEnums.none));
+    clearBookingInformation();
   }
 
   void onBookingOrderCanceled(String reason) async {

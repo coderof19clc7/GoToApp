@@ -57,9 +57,9 @@ class MainCubit extends Cubit<MainState> {
               "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
             ).remove();
           }
-          injector<LocalStorageManager>().clearAll();
+          await injector<LocalStorageManager>().clearAll();
           await streamSubscriptionPosition?.cancel();
-          backToLogin.call();
+          Timer(const Duration(seconds: 2), () => backToLogin.call(),);
         } else {
           UIHelper.showErrorToast(data["error"]);
         }

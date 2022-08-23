@@ -70,7 +70,7 @@ class SignUpCubit extends AuthCubit<SignUpState> {
     emit(state.copyWith(authEnum: AuthEnum.signUpSucceeded));
     showAuthenticateResultToast();
     Timer(
-      const Duration(seconds: 3), () => Navigator.pop(context!),
+      const Duration(seconds: 2), () => Navigator.pop(context!),
     );
   }
 }

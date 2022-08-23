@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:go_to/configs/app_configs.dart';
 import 'package:go_to/configs/constants/enums/auth_enums.dart';
 import 'package:go_to/configs/constants/keys/storage_keys.dart';
 import 'package:go_to/configs/constants/network_constants/firebase_constants.dart';
@@ -45,7 +45,7 @@ class SignInCubit extends AuthCubit<SignInState> {
   }
 
   Future<void> _doSignIn(String phoneNumber, String password) async {
-    final deviceToken = await FirebaseMessaging.instance.getToken() ?? "";
+    final deviceToken = injector<AppConfig>().deviceToken;
     await databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["login"]}",
     ).set({
@@ -74,7 +74,7 @@ class SignInCubit extends AuthCubit<SignInState> {
 
   Future<void> _onSignInSucceeded(String id, String phone, String name, String type,
       String accessToken, String deviceToken,) async {
-    await _saveUserDataToLocalStorage(id, phone, name, type, accessToken, deviceToken);
+    await _saveUserDataToLocalStorage(id, phone, name, type, accessToken);
     if (type.toLowerCase().compareTo("Customer".toLowerCase()) != 0) {
       await databaseRef.ref.child(
         "${FirebaseConstants.databaseChildPath["availableDrivers"]}/$id",
@@ -83,19 +83,18 @@ class SignInCubit extends AuthCubit<SignInState> {
     emit(state.copyWith(authEnum: AuthEnum.signInSucceeded));
     showAuthenticateResultToast();
     Timer(
-      const Duration(seconds: 3),
+      const Duration(seconds: 2),
       () => Navigator.pushReplacementNamed(context!, RouteConstants.mainRoute),
     );
   }
 
-  Future<void> _saveUserDataToLocalStorage(String id, String phone, String name, String type,
-      String accessToken, String deviceToken,) async {
+  Future<void> _saveUserDataToLocalStorage(String id, String phone, String name,
+      String type, String accessToken) async {
     final localStorageManager = injector<LocalStorageManager>();
     await localStorageManager.setString(LocalStorageKeys.userID, id);
     await localStorageManager.setString(LocalStorageKeys.phoneNumber, phone);
     await localStorageManager.setString(LocalStorageKeys.name, name);
     await localStorageManager.setString(LocalStorageKeys.accountType, type);
     await localStorageManager.setString(LocalStorageKeys.accessToken, accessToken);
-    await localStorageManager.setString(LocalStorageKeys.deviceToken, deviceToken);
   }
 }

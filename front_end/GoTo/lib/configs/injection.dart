@@ -15,19 +15,19 @@ import 'package:go_to/models/infos/user_info.dart';
 final injector = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-  //app config
-  await LocalStorageManager.init();
-  injector.registerSingleton<LocalStorageManager>(LocalStorageManager.getInstance());
-  injector.registerSingleton<AppConfig>(await AppConfig.getInstance());
-
-  injector.registerSingleton<UserInfo>(UserInfo.createInstance());
-
   //init firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
   // FirebaseCrashlytics.instance.setUserIdentifier("7887");
   // FirebaseCrashlytics.instance.crash();
+
+  //app config
+  await LocalStorageManager.init();
+  injector.registerSingleton<LocalStorageManager>(LocalStorageManager.getInstance());
+  injector.registerSingleton<AppConfig>(await AppConfig.getInstance());
+
+  injector.registerSingleton<UserInfo>(UserInfo.createInstance());
   
   //get realtime database reference
   injector.registerSingleton<RealtimeDatabaseService>(RealtimeDatabaseService.instance);

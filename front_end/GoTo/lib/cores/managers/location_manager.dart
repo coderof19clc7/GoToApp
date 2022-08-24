@@ -85,7 +85,6 @@ class LocationManager {
     return LocationSettings(
       accuracy: LocationAccuracy.high,
       distanceFilter: distanceFilter,
-      timeLimit: const Duration(seconds: 5),
     );
   }
 

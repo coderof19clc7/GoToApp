@@ -43,25 +43,37 @@ class SignUpCubit extends AuthCubit<SignUpState> {
   }
 
   Future<void> _doSignUp(String phoneNumber, String name, String password) async {
+    Map<String, dynamic> preValue = {};
+    final preSnapshot = await databaseRef.ref.child(
+      "${FirebaseConstants.databaseChildPath["registerStatus"]}",
+    ).get();
+    if (preSnapshot.exists) {
+      preValue = Map<String, dynamic>.from((preSnapshot.value ?? {}) as Map<dynamic, dynamic>);
+    }
+
     await databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["register"]}",
     ).set({
       "phoneNumber": phoneNumber, "password": password, "accountType": "Customer",
       "name": name, "time": UIHelper.getTimeStamp(),
     });
+
     authListener = databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["registerStatus"]}",
     ).onValue.listen((event) async {
       final data = Map<String, dynamic>.from((event.snapshot.value ?? {}) as Map<dynamic, dynamic>);
       print(data);
       if (data["phoneNumber"]?.toString().compareTo(phoneNumber) == 0) {
-        if (data["successful"] == true) {
-          _onSignUpSucceeded();
-        } else {
-          emit(state.copyWith(authEnum: AuthEnum.signUpFailed));
-          showAuthenticateResultToast(isSuccessful: false, message:  "${data["error"]}",);
+        if (!(data["phoneNumber"]?.toString().compareTo(preValue["phoneNumber"]?.toString() ?? "") == 0
+            && data["time"] == preValue["time"])) {
+          if (data["successful"] == true) {
+            _onSignUpSucceeded();
+          } else {
+            emit(state.copyWith(authEnum: AuthEnum.signUpFailed));
+            showAuthenticateResultToast(isSuccessful: false, message:  "${data["error"]}",);
+          }
+          authListener?.cancel();
         }
-        authListener?.cancel();
       }
     });
   }

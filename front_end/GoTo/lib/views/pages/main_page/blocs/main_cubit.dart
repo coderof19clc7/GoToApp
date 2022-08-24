@@ -34,9 +34,18 @@ class MainCubit extends Cubit<MainState> {
     if (injector<UserInfo>().type?.toLowerCase().compareTo("Customer".toLowerCase()) != 0) {
       streamSubscriptionPosition = LocationManager.listenToCurrentLocationChanges();
     }
+    emit(state.copyWith(tempVal: state.tempVal > state.currentIndex ? state.currentIndex : state.tempVal));
   }
 
   Future<void> logout(void Function() backToLogin) async {
+    Map<String, dynamic> preValue = {};
+    final preSnapshot = await injector<RealtimeDatabaseService>().ref.child(
+      "${FirebaseConstants.databaseChildPath["logoutStatus"]}",
+    ).get();
+    if (preSnapshot.exists) {
+      preValue = Map<String, dynamic>.from((preSnapshot.value ?? {}) as Map<dynamic, dynamic>);
+    }
+
     final phoneNumber = injector<UserInfo>().phone ?? "";
     await injector<RealtimeDatabaseService>().ref.child(
       "${FirebaseConstants.databaseChildPath["logout"]}",
@@ -51,19 +60,22 @@ class MainCubit extends Cubit<MainState> {
     ).onValue.listen((event) async {
       final data = Map<String, dynamic>.from((event.snapshot.value ?? {}) as Map<dynamic, dynamic>);
       if (data["phoneNumber"]?.toString().compareTo(phoneNumber) == 0) {
-        if (data["successful"] == true) {
-          if (userInfo.type?.toLowerCase().compareTo("Customer".toLowerCase()) != 0) {
-            await injector<RealtimeDatabaseService>().ref.child(
-              "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
-            ).remove();
+        if (!(data["phoneNumber"]?.toString().compareTo(preValue["phoneNumber"]?.toString() ?? "") == 0
+            && data["time"] == preValue["time"])) {
+          if (data["successful"] == true) {
+            if (userInfo.type?.toLowerCase().compareTo("Customer".toLowerCase()) != 0) {
+              await injector<RealtimeDatabaseService>().ref.child(
+                "${FirebaseConstants.databaseChildPath["availableDrivers"]}/${userInfo.id}",
+              ).remove();
+            }
+            await injector<LocalStorageManager>().clearAll();
+            await streamSubscriptionPosition?.cancel();
+            Timer(const Duration(seconds: 2), () => backToLogin.call(),);
+          } else {
+            UIHelper.showErrorToast(data["error"]);
           }
-          await injector<LocalStorageManager>().clearAll();
-          await streamSubscriptionPosition?.cancel();
-          Timer(const Duration(seconds: 2), () => backToLogin.call(),);
-        } else {
-          UIHelper.showErrorToast(data["error"]);
+          logoutListener?.cancel();
         }
-        logoutListener?.cancel();
       }
     });
   }

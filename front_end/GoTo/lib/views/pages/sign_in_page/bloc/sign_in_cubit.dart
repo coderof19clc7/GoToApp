@@ -45,6 +45,14 @@ class SignInCubit extends AuthCubit<SignInState> {
   }
 
   Future<void> _doSignIn(String phoneNumber, String password) async {
+    Map<String, dynamic> preValue = {};
+    final preSnapshot = await databaseRef.ref.child(
+      "${FirebaseConstants.databaseChildPath["loginStatus"]}",
+    ).get();
+    if (preSnapshot.exists) {
+      preValue = Map<String, dynamic>.from((preSnapshot.value ?? {}) as Map<dynamic, dynamic>);
+    }
+
     final deviceToken = injector<AppConfig>().deviceToken;
     await databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["login"]}",
@@ -52,22 +60,26 @@ class SignInCubit extends AuthCubit<SignInState> {
       "phoneNumber": phoneNumber, "password": password,
       "time": UIHelper.getTimeStamp(), "deviceToken": deviceToken,
     });
+
     databaseRef.ref.child(
       "${FirebaseConstants.databaseChildPath["loginStatus"]}",
     ).onValue.listen((event) async {
       final data = Map<String, dynamic>.from((event.snapshot.value ?? {}) as Map<dynamic, dynamic>);
       print(data);
       if (data["phoneNumber"]?.toString().compareTo(phoneNumber) == 0) {
-        if (data["successful"] == true) {
-          await _onSignInSucceeded(
-            data["id"] ?? "", data["phoneNumber"] ?? "", data["name"] ?? "",
-            data["accountType"] ?? "", data["token"] ?? "", deviceToken,
-          );
-        } else {
-          emit(state.copyWith(authEnum: AuthEnum.signInFailed));
-          showAuthenticateResultToast(isSuccessful: false);
+        if (!(data["phoneNumber"]?.toString().compareTo(preValue["phoneNumber"]?.toString() ?? "") == 0
+            && data["time"] == preValue["time"])) {
+          if (data["successful"] == true) {
+            await _onSignInSucceeded(
+              data["id"] ?? "", data["phoneNumber"] ?? "", data["name"] ?? "",
+              data["accountType"] ?? "", data["token"] ?? "", deviceToken,
+            );
+          } else {
+            emit(state.copyWith(authEnum: AuthEnum.signInFailed));
+            showAuthenticateResultToast(isSuccessful: false);
+          }
+          authListener?.cancel();
         }
-        authListener?.cancel();
       }
     });
   }

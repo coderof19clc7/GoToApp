@@ -12,7 +12,7 @@ const String envPath = ".env";
 
 class AppConfig{
   String? baseUrl, initialRoute;
-  String appName = "", openStreetMapUrl = "", deviceToken = "";
+  String appName = "GoTo", openStreetMapUrl = "", deviceToken = "";
   double centerLat = 0, centerLng = 0;
   bool debugTag = false;
   int cacheDuration = 100;

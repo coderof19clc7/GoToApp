@@ -31,7 +31,7 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     PageStorageBucket bucket = PageStorageBucket();
-    _loadUserDataFromLocalStorage();
+    final isCustomer = _loadUserDataFromLocalStorage();
 
     return BlocProvider(
       create: (context) => MainCubit(),
@@ -45,7 +45,7 @@ class MainPage extends StatelessWidget {
               },
               child: Scaffold(
                 appBar: AppBar(
-                  title: const TitleWidget(),
+                  title: TitleWidget(isCustomer: isCustomer,),
                   centerTitle: true,
                   backgroundColor: ColorConstants.orange,
                 ),
@@ -66,14 +66,16 @@ class MainPage extends StatelessWidget {
     );
   }
 
-  void _loadUserDataFromLocalStorage() {
+  bool _loadUserDataFromLocalStorage() {
     final localStorageManager = injector<LocalStorageManager>();
+    final accountType = localStorageManager.getString(LocalStorageKeys.accountType) ?? "Customer";
     injector<UserInfo>().setData(
       localStorageManager.getString(LocalStorageKeys.userID) ?? "ABCzyx",
       localStorageManager.getString(LocalStorageKeys.phoneNumber) ?? "123123123123",
       localStorageManager.getString(LocalStorageKeys.name) ?? "ABC",
-      localStorageManager.getString(LocalStorageKeys.accountType) ?? "Customer",
+      accountType,
     );
     print(injector<AppConfig>().deviceToken);
+    return accountType.toLowerCase().compareTo("Customer".toLowerCase()) == 0;
   }
 }

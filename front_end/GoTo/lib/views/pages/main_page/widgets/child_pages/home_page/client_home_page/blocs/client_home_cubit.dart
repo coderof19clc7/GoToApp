@@ -160,7 +160,7 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
       final willRemoveSth = marker.point == tempSuggestedMap[keyToRemove]?.coordinates;
         if (willRemoveSth) {
           print('OK will remove');
-          // tempSuggestedMap.remove(keyToRemove);
+          tempSuggestedMap.remove(keyToRemove);
           tempPolylineList.clear();
         }
         return willRemoveSth;

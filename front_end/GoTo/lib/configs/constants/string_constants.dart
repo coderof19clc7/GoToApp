@@ -17,6 +17,7 @@ class StringConstants {
   static const please = "Vui lòng";
   static const checkYourInputAgain = "Kiểm tra lại thông tin";
   static const app = "Ứng dụng";
+  static const for_ = "Cho";
   static const home = "Trang chủ";
   static const profile = "Thông tin";
   static const yourLocation = "Vị trí của bạn";

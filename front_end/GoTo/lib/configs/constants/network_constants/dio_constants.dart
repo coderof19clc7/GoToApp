@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:go_to/configs/constants/network_constants/open_route_service_constants.dart';
 
 class DioConstants {
-  static const int connectTimeout = 5000;
-  static const int receiveTimeout = 3000;
+  static const int connectTimeout = 30000;
+  static const int receiveTimeout = 15000;
 
   static final openRouteServiceApiPaths = {
     "autocompletePath": "${OpenRouteServiceConstants.baseUrl}"

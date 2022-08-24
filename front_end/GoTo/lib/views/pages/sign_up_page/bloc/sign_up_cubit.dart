@@ -58,7 +58,7 @@ class SignUpCubit extends AuthCubit<SignUpState> {
         if (data["successful"] == true) {
           _onSignUpSucceeded();
         } else {
-          emit(state.copyWith(authEnum: AuthEnum.signInFailed));
+          emit(state.copyWith(authEnum: AuthEnum.signUpFailed));
           showAuthenticateResultToast(isSuccessful: false, message:  "${data["error"]}",);
         }
         authListener?.cancel();

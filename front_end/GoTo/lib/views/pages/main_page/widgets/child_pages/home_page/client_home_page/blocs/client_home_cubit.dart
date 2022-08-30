@@ -253,9 +253,11 @@ class ClientHomeCubit extends HomeCubit<ClientHomeState> {
     startTextEditingController?.text = "";
     endTextEditingController?.text = "";
     prePolylineList.clear();
+    state.mapChosenSuggested?.clear();
     state.listMarker?.clear();
     state.listPolyline?.clear();
     emit(state.copyWith(
+      mapChosenSuggested: {},
       listMarker: [], listPolyline: [],
       clientBookingStatusEnums: ClientBookingStatusEnums.none,
       distance: 0, timeEstimate: 0, driverName: "", driverPhone: "",
